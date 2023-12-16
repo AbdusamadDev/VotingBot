@@ -18,7 +18,7 @@ async def start(message: types.Message):
 async def respond(callback_query: types.CallbackQuery):
     global page_number
     page_number += 1
-    print(page_number)
+    bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
     await bot.send_message(
         callback_query.from_user.id,
         "You are an asshole!",

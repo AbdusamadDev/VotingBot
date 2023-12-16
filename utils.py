@@ -12,4 +12,5 @@ def get_teachers_name():
                 return names
 
 
-print(get_teachers_name())
+if __name__ == "__main__":
+    print(get_teachers_name())
