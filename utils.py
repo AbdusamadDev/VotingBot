@@ -2,9 +2,14 @@ def get_teachers_name():
     with open("list.txt", "rb") as file:
         names = {}
         for name in file.read().decode().split("\n"):
-            sliced = name.split("")
-            names[sliced[0].strip()] = sliced[-1].strip()
-    print(names)
+            try:
+                sliced = name.split("	")
+                print(sliced)
+                names[
+                    f"{sliced[0]} - maktab" if sliced[0].isdigit() else sliced[0]
+                ] = sliced[1]
+            except IndexError:
+                return names
 
 
-get_teachers_name()
+print(get_teachers_name())
