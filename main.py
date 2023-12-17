@@ -1,7 +1,7 @@
 from aiogram import Bot, executor, Dispatcher, types
 import logging
 
-from utils import get_teachers_name
+from utils import get_teachers_name, generate_list
 from buttons import teachers_list
 
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,8 @@ async def start(message: types.Message):
     global start_page, end_page
     start_page, end_page = 0, 8
     await message.answer(
-        "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n",
+        f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+        + generate_list(names=get_teachers_name()),
         reply_markup=teachers_list(
             start_page=start_page,
             end_page=end_page,

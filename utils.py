@@ -13,5 +13,11 @@ def get_teachers_name():
     return {}
 
 
+def generate_list(names):
+    if not isinstance(names, dict):
+        return ""
+    return "".join(f"{key}. {value}.\n" for key, value in names.items())
+
+
 if __name__ == "__main__":
     print(get_teachers_name())
