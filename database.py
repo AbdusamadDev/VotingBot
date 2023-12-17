@@ -69,10 +69,11 @@ class Database:
 
     def is_already_voted(self, telegram_id):
         voted = self.cursor.execute(
-            """SELECT is_voted FROM users WHERE telegram_id=?""",
-        )
+            """SELECT is_voted FROM users WHERE telegram_id=?""", (telegram_id,)
+        ).fetchone()
+        return False if not voted else bool(voted[0])
 
 
 if __name__ == "__main__":
     database = Database()
-    database.voting(2003049919, "1 - maktab")
+    print(database.is_already_voted(2003049919))
