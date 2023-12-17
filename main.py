@@ -85,14 +85,13 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await VotingState.choice.set()
     await state.update_data(choice=choice)
 
-
 @disp.callback_query_handler(lambda query: str(query.data).startswith("subscribed"))
 async def subscription_handler(callback_query: types.CallbackQuery):
     # await VotingState.captcha.set()
     # generated_captcha = random.choice(captcha_images)   
     # await state.update_data(captcha=generated_captcha[0])
     await bot.send_message(
-        text="Captchadan uting: manu nichchi {generated_captcha[0]}?",
+        text="Captchadan uting: manu nichchi?",
         chat_id=callback_query.from_user.id,
     )
 
