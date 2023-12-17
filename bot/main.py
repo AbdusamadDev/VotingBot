@@ -42,6 +42,8 @@ async def pagination(callback_query):
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
+    bot_info = await bot.get_me()
+    print(bot_info)
     if database.is_already_voted(message.from_user.id):
         await message.answer("Siz allaqachon ovoz berib bolgansiz!")
     else:
@@ -118,13 +120,12 @@ async def process_choice(message: types.Message, state: FSMContext):
             message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
         )
 
+
 ####################################################################################
 ####################################################################################
 ####################################################################################
 # _______________________________   ADMIN ACTIONS    _______________________________
-@disp.message_handler(commands=["start"], user_is_admin=True)
-async def start_for_admin(message: types.Message):
-    await message.answer("Wassup admin")
+
 
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)
