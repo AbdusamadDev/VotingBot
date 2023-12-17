@@ -78,16 +78,17 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 
 @disp.callback_query_handler(lambda query: query.data == "subscribed")
-async def subscribtion_handler(callback_query: types.CallbackQuery):
-    # print(VotingState.channel_name)
+async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMContext):
+    print(await state.get_data())
     await bot.send_message(
         text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
     )
     await VotingState.captcha.set()
 
 
-@disp.callback_query_handler(lambda query: query.data.startswith("Channel"))
+@disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
 async def channel_button_handler(callback_query: types.CallbackQuery, state: FSMContext):
+    print("Button click@@@@!!!!")
     VotingState.channel_name.set()
     await state.update_data(channel_name=callback_query.data.split(":")[1])
 
