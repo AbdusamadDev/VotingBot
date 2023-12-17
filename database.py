@@ -26,17 +26,16 @@ class Database:
             (id INTEGER, fullname TEXT, school TEXT UNIQUE, number_of_votes INTEGER, 
             PRIMARY KEY ('id'))""",
         )
-        self.connection.commit()
         for school, name in get_teachers_name().items():
             try:
-                print("It is being executed: ", name)
                 self.cursor.execute(
-                    """INSERT INTO teachers (fullname, school, number_of_votes)""",
+                    """INSERT INTO teachers (fullname, school, number_of_votes) 
+                    VALUES (?, ?, ?)""",
                     (name, school, 0),
                 )
-                self.connection.commit()
-            except sqlite3.OperationalError:
+            except sqlite3.IntegrityError:
                 continue
+        self.connection.commit()
 
     def add_user(self, username, first_name, telegram_id):
         self.cursor.execute(
@@ -58,9 +57,9 @@ class Database:
         )
         if number_of_votes:
             number_of_votes = number_of_votes.fetchone()
-        # self.cursor.execute(
-        #     """UPDATE teachers SET number_of_votes = ? WHERE school = ?""", ()
-        # )
+        self.cursor.execute(
+            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""", (number_of_votes + 1, scho)
+        )
         print(number_of_votes)
         self.connection.commit()
 
