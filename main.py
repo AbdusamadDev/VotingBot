@@ -43,7 +43,7 @@ async def respond(callback_query: types.CallbackQuery):
 async def respond(callback_query: types.CallbackQuery):
     global start_page, end_page
     start_page = end_page - 8
-    end_page += 8
+    end_page -= 8
     await pagination(callback_query)
 
 
