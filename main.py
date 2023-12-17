@@ -80,10 +80,20 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
 async def subscribtion_handler(callback_query: types.CallbackQuery):
     subscribtion_click[callback_query.from_user.id] = callback_query.data.split(":")[1]
-    await callback_query.answer("Captchadan uting: manu nichchi 2255?")
+    print(subscribtion_click)
+    await bot.send_message(
+        text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
+    )
     await VotingState.captcha.set()
-    
-    
+
+
+@disp.message_handler(state=VotingState.captcha)
+async def captcha_handler(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    print(f"Current state: {current_state}")
+    await state.finish()
+    await message.answer("Thank you for your response!")
+
 
 CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
