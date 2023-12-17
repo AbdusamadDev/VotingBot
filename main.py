@@ -74,20 +74,31 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await state.update_data(choice=choice)
 
 
-@disp.message_handler(commands=['getmember'])
-async def get_member_info(message: types.Message):
-    chat_id = message.chat.id
+async def check_subscription(user_id):
+    try:
+        # Get chat member info
+        chat_member = await bot.get_chat_member(chat_id="LAYFXAK_KANAL", user_id=user_id)
+
+        # Check if the user is a member of the channel
+        if chat_member.status == ChatMemberStatus.MEMBER:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        logging.error(f"Error checking subscription: {e}")
+        return False
+
+@disp.message_handler(commands=['start'])
+async def start(message: types.Message):
     user_id = message.from_user.id
 
-    try:
-        member = await bot.get_chat_member(chat_id, user_id)
-        member_status = member.status
-        member_user = member.user
-        print(f"User ID: {user_id}, Status: {member_status}, User: {member_user}")
-        await message.reply(f"Your membership status in this chat: {member_status}")
-    except Exception as e:
-        print(f"Error getting chat member: {e}")
-        await message.reply("Unable to get your membership status.")
+    if await check_subscription(user_id):
+        await message.reply("You are subscribed to the channel!")
+    else:
+        await message.reply("To access this bot, you need to subscribe to the channel first.")
+
+
 
 
 if __name__ == "__main__":
