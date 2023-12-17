@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 import logging
 
 from utils import get_teachers_name, generate_list
-from buttons import teachers_list, get_channels
+from buttons import teachers_list, get_channels, CHANNELS
 from states import VotingState
 
 storage = MemoryStorage()
@@ -86,7 +86,7 @@ async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMCo
     await VotingState.captcha.set()
 
 
-@dp.inline_handler(lambda query: True)
+@disp.inline_handler(lambda query: True)
 async def inline_handler(query: types.InlineQuery):
     channels_buttons = get_channels()
 
