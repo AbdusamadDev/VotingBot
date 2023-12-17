@@ -84,12 +84,12 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await state.update_data(choice=choice)
 
 
-@disp.callback_query_handler(lambda query: query.data == "subscribed")
-async def subscribtion_handler(callback_query: types.CallbackQuery):
+@disp.callback_query_handler(lambda query: str(query.data).startswith("subscribed"))
+async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMContext):
+    await VotingState.captcha.set()
     await bot.send_message(
         text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
     )
-    await VotingState.captcha.set()
 
 
 # @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
@@ -110,12 +110,18 @@ async def subscribtion_handler(callback_query: types.CallbackQuery):
 #     # await state.update_data(channel_name=callback_query.data.split(":")[1])
 
 
-# @disp.message_handler(state=VotingState.captcha)
-# async def captcha_handler(message: types.Message, state: FSMContext):
-#     current_state = await state.get_state()
-#     print(f"Current state: {current_state}")
-#     await state.finish()
-#     await message.answer("Thank you for your response!")
+@d.message_handler(state=VotingState.captcha)
+async def captcha_handler(message: types.Message, state: FSMContext):
+    # Assuming the correct captcha answer is "2255"
+    correct_answer = "2255"
+    user_answer = message.text.strip()
+
+    if user_answer == correct_answer:
+        await message.answer("Captcha is correct! You are subscribed.")
+    else:
+        await message.answer("Captcha is incorrect. Please try again.")
+
+    await state.finish()
 
 
 # CHANNEL_USERNAME = "@LAYFXAK_KANAL"
