@@ -1,6 +1,7 @@
 from aiogram import Bot, executor, Dispatcher, types
 import logging
 
+from utils import get_teachers_name
 from buttons import teachers_list
 
 logging.basicConfig(level=logging.INFO)
@@ -17,7 +18,7 @@ async def pagination(callback_query):
     await bot.send_message(
         callback_query.from_user.id,
         "You are an asshole!",
-        reply_markup=teachers_list(start_page=start_page, end_page=end_page),
+        reply_markup=teachers_list(start_page=start_page, end_page=end_page, get_teachers_name.keys()),
     )
 
 

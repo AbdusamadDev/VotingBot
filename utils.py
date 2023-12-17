@@ -10,6 +10,7 @@ def get_teachers_name():
                 ] = sliced[1]
             except IndexError:
                 return names
+        
 
 
 if __name__ == "__main__":
