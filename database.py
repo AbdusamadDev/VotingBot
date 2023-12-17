@@ -1,5 +1,7 @@
 import sqlite3
 
+from utils import get_teachers_name
+
 
 class Database:
     def __init__(self, name: str = "db.sqlite3") -> None:
@@ -21,11 +23,18 @@ class Database:
     def create_teachers_table(self):
         self.cursor.execute(
             """CREATE TABLE IF NOT EXISTS teachers 
-            (id INTEGER, fullname TEXT, school TEXT, number_of_votes INTEGER, 
+            (id INTEGER, fullname TEXT, school TEXT UNIQUE, number_of_votes INTEGER, 
             PRIMARY KEY ('id'))""",
         )
-        for details in get_teachers_name():
-            
+        for school, name in get_teachers_name().items():
+            try:
+                print("It is being executed: ", name)
+                self.cursor.execute(
+                    """INSERT INTO teachers (fullname, school, number_of_votes)""",
+                    (name, school, 0),
+                )
+            except sqlite3.OperationalError:
+                continue
         self.connection.commit()
 
     def add_user(self, username, first_name, telegram_id):
