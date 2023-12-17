@@ -85,33 +85,13 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await VotingState.choice.set()
     await state.update_data(choice=choice)
 
+
 @disp.callback_query_handler(lambda query: str(query.data).startswith("subscribed"))
 async def subscription_handler(callback_query: types.CallbackQuery):
-    # await VotingState.captcha.set()
-    # generated_captcha = random.choice(captcha_images)   
-    # await state.update_data(captcha=generated_captcha[0])
     await bot.send_message(
         text="Captchadan uting: manu nichchi?",
         chat_id=callback_query.from_user.id,
     )
-
-
-# @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
-# async def channel_button_handler(callback_query: types.CallbackQuery):
-#     channel_url = next(
-#         (
-#             channel[0]
-#             for channel in CHANNELS
-#             if callback_query.data.endswith(channel[1])
-#         ),
-#         None,
-#     )
-#     if channel_url:
-#         print(f"Clicked URL: {channel_url}")
-
-#     print("Button click@@@@!!!!")
-#     # VotingState.channel_name.set()
-#     # await state.update_data(channel_name=callback_query.data.split(":")[1])
 
 
 @disp.message_handler(state=VotingState.captcha)
@@ -126,9 +106,6 @@ async def captcha_handler(message: types.Message, state: FSMContext):
     else:
         await message.answer("Captcha is incorrect. Please try again.")
     await state.finish()
-
-
-# CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
 
 if __name__ == "__main__":
