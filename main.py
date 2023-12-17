@@ -75,21 +75,13 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 
 async def check_subscription(user_id):
-    try:
-        # Get chat member info
-        chat_member = await bot.get_chat_member(
-            chat_id="@LAYFXAK_KANAL", user_id=user_id
-        )
+    chat_member = await bot.get_chat_member(chat_id="@LAYFXAK_KANAL", user_id=user_id)
 
-        # Check if the user is a member of the channel
-        print("Status: ", chat_member)
-        if chat_member.status in ["member", "administrator", "creator"]:
-            return True
-        else:
-            return False
-
-    except Exception as e:
-        logging.error(f"Error checking subscription: {e}")
+    # Check if the user is a member of the channel
+    print("Status: ", chat_member)
+    if chat_member.status in ["member", "administrator", "creator"]:
+        return True
+    else:
         return False
 
 
