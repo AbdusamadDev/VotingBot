@@ -75,6 +75,8 @@ class Database:
             return False
         return bool(voted[0])
 
+    def get_user_
+
 
 if __name__ == "__main__":
     database = Database()
