@@ -7,7 +7,7 @@ from buttons import teachers_list
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
 disp = Dispatcher(bot)
-start_page = 1
+start_page = 0
 end_page = 8
 
 
@@ -29,9 +29,9 @@ async def pagination(callback_query):
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
     global start_page, end_page
-    start_page, end_page = 1, 8
+    start_page, end_page = 0, 8
     await message.answer(
-        "Hi, wassup",
+        "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n",
         reply_markup=teachers_list(
             start_page=start_page,
             end_page=end_page,
