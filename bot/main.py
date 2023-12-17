@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
-from buttons import teachers_list
+from buttons import teachers_list, get_users
 from states import VotingState
 from database import Database
 from utils import (
@@ -138,8 +138,8 @@ async def process_choice(message: types.Message, state: FSMContext):
 async def users(message: types.Message):
     await message.answer(
         "Here you are",
-        reply_markup=teachers_list(
-            labels=database.get_usernames(),
+        reply_markup=get_users(
+            usernames=database.get_usernames(),
             start_page=users_start_page,
             end_page=users_end_page,
         ),
