@@ -58,7 +58,7 @@ class Database:
             """SELECT number_of_votes FROM teachers WHERE school LIKE ?""",
             (school,),
         )
-        if number_of_votes:
+        if number_of_votes and number_of_votes is not None:
             number_of_votes = number_of_votes.fetchone()[0]
         self.cursor.execute(
             """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""",
