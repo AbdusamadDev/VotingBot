@@ -75,7 +75,15 @@ class Database:
             return False
         return bool(voted[0])
 
-    def get_user_
+    def get_user_id(self, username):
+        user = self.cursor.execute(
+            """SELECT telegram_id FROM users WHERE username=?""",
+            (username,),
+        ).fetchone()
+        return user[0] if user else 0
+
+    def get_usernames(self):
+        users = self.cursor.execute()
 
 
 if __name__ == "__main__":
