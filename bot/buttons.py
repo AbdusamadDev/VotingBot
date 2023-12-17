@@ -22,8 +22,13 @@ def teachers_list(start_page, end_page, labels):
     )
     return buttons
 
-def admin_options(usernames):
-    buttons = 
+
+def get_users(usernames):
+    buttons = [
+        InlineKeyboardButton(text=username, callback_data=f"user:{username}")
+        for username in usernames
+    ]
+    return buttons
 
 
 # CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]
