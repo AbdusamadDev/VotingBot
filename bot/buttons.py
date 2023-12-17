@@ -22,23 +22,21 @@ def teachers_list(start_page, end_page, labels):
     )
     return buttons
 
-# def admin_options():
-    
 
-# CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]
+CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]
 
 
-# def get_channels():
-#     buttons = [
-#         InlineKeyboardButton(
-#             text=channel[-1], url=channel[0], callback_data=f"Channel:{channel[1]}"
-#         )
-#         for channel in CHANNELS
-#     ]
-#     subscribed_button = InlineKeyboardButton(
-#         text="Obuna bo'ldim", callback_data="subscribed"
-#     )
-#     channels_buttons = InlineKeyboardMarkup(
-#         inline_keyboard=[buttons, [subscribed_button]]
-#     )
-#     return channels_buttons
+def get_channels():
+    buttons = [
+        InlineKeyboardButton(
+            text=channel[-1], url=channel[0], callback_data=f"Channel:{channel[1]}"
+        )
+        for channel in CHANNELS
+    ]
+    subscribed_button = InlineKeyboardButton(
+        text="Obuna bo'ldim", callback_data="subscribed"
+    )
+    channels_buttons = InlineKeyboardMarkup(
+        inline_keyboard=[buttons, [subscribed_button]]
+    )
+    return channels_buttons

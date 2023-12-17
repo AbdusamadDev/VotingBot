@@ -4,32 +4,22 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
+from utils import get_teachers_name, generate_list, captcha_images
 from buttons import teachers_list
 from states import VotingState
 from database import Database
-from utils import (
-    get_teachers_name,
-    get_credentials,
-    captcha_images,
-    generate_list,
-)
 
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=get_credentials().get("token", None))
+bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
 names_list = generate_list(names=get_teachers_name())
 disp = Dispatcher(bot, storage=storage)
-ADMIN_ID = get_credentials().get("admin_id", None)
 subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
 
 
-####################################################################################
-####################################################################################
-####################################################################################
-# _______________________________    USER ACTIONS    _______________________________
 async def pagination(callback_query):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
@@ -48,29 +38,26 @@ async def pagination(callback_query):
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    if ADMIN_ID != message.from_user.id:
-        if database.is_already_voted(message.from_user.id):
-            await message.answer("Siz allaqachon ovoz berib bolgansiz!")
-        else:
-            global start_page, end_page
-            start_page, end_page = 0, 8
-            constructed_names = "".join(names_list[:end_page])
-            await message.answer(
-                f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-                + constructed_names,
-                reply_markup=teachers_list(
-                    start_page=start_page,
-                    end_page=end_page,
-                    labels=list(get_teachers_name().keys()),
-                ),
-            )
-            database.add_user(
-                telegram_id=message.from_user.id,
-                first_name=message.from_user.first_name,
-                username=message.from_user.username,
-            )
+    if database.is_already_voted(message.from_user.id):
+        await message.answer("Siz allaqachon ovoz berib bolgansiz!")
     else:
-        await message.answer("Wassup Admin, fuckin admin")
+        global start_page, end_page
+        start_page, end_page = 0, 8
+        constructed_names = "".join(names_list[:end_page])
+        await message.answer(
+            f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+            + constructed_names,
+            reply_markup=teachers_list(
+                start_page=start_page,
+                end_page=end_page,
+                labels=list(get_teachers_name().keys()),
+            ),
+        )
+        database.add_user(
+            telegram_id=message.from_user.id,
+            first_name=message.from_user.first_name,
+            username=message.from_user.username,
+        )
 
 
 @disp.callback_query_handler(lambda query: query.data == "next")
@@ -126,12 +113,6 @@ async def process_choice(message: types.Message, state: FSMContext):
         await bot.send_message(
             message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
         )
-
-
-####################################################################################
-####################################################################################
-####################################################################################
-# _______________________________   ADMIN ACTIONS    _______________________________
 
 
 if __name__ == "__main__":
