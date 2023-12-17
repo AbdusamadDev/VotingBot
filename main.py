@@ -5,7 +5,7 @@ import logging
 
 from utils import get_teachers_name, generate_list
 from database import Database
-from buttons import teachers_list, get_channels, CHANNELS
+from buttons import teachers_list, get_channels
 from states import VotingState
 
 storage = MemoryStorage()
@@ -36,7 +36,7 @@ async def pagination(callback_query):
 
 
 @disp.message_handler(commands=["start"])
-async def start(message: types.Message, state: FSMContext):
+async def start(message: types.Message):
     global start_page, end_page
     start_page, end_page = 0, 8
     constructed_names = "".join(names_list[:end_page])
@@ -49,8 +49,7 @@ async def start(message: types.Message, state: FSMContext):
             labels=list(get_teachers_name().keys()),
         ),
     )
-
-    await state.update_data(
+    database.add_user(
         telegram_id=message.from_user.id,
         first_name=message.from_user.first_name,
         username=message.from_user.username,
@@ -86,7 +85,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 
 @disp.callback_query_handler(lambda query: query.data == "subscribed")
-async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMContext):
+async def subscribtion_handler(callback_query: types.CallbackQuery):
     await bot.send_message(
         text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
     )
