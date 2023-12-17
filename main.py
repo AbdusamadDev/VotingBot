@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
 disp = Dispatcher(bot)
 start_page = 1
-end_page = 1
+end_page = 8
 
 
 async def pagination(callback_query):
@@ -32,18 +32,18 @@ async def start(message: types.Message):
 
 
 @disp.callback_query_handler(lambda query: query.data == "next")
-async def respond(callback_query: types.CallbackQuery):
+async def next_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
-    start_page = end_page - 8
     end_page += 8
+    start_page = end_page - 8
     await pagination(callback_query)
 
 
 @disp.callback_query_handler(lambda query: query.data == "back")
-async def respond(callback_query: types.CallbackQuery):
+async def back_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
-    start_page = end_page - 8
     end_page -= 8
+    start_page = end_page - 8
     await pagination(callback_query)
 
 
