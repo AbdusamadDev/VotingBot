@@ -13,6 +13,7 @@ def get_teachers_name():
     return {}
 
 
+
 def generate_list(names):
     if not isinstance(names, dict):
         return ""
