@@ -6,6 +6,7 @@ class Database:
         self.connection = sqlite3.connect(name)
         self.cursor = self.connection.cursor()
         self.create_users_table()
+        self.create_teachers_table()
 
     def create_users_table(self):
         self.cursor.execute(
@@ -14,6 +15,14 @@ class Database:
             (id INTEGER, username TEXT, first_name TEXT, telegram_id INTEGER,
             is_voted INTEGER, PRIMARY KEY ('id'))
             """
+        )
+        self.connection.commit()
+
+    def create_teachers_table(self):
+        self.cursor.execute(
+            """CREATE TABLE IF NOT EXISTS teachers 
+            (id INTEGER, fullname TEXT, school TEXT, number_of_votes INTEGER, 
+            PRIMARY KEY ('id'))""",
         )
         self.connection.commit()
 
@@ -30,5 +39,8 @@ class Database:
         self.cursor.execute(
             """UPDATE users SET is_voted = ? WHERE telegram_id = ?;""",
             (boolean, telegram_id),
+        )
+        self.cursor.execute(
+            """UPDATE teachers SET number_of_votes = ?""",
         )
         self.connection.commit()

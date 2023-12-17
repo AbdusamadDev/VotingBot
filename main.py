@@ -77,9 +77,9 @@ async def back_handler(callback_query: types.CallbackQuery):
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
 async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     choice_data = callback_query.data.split(":")
-    generated_captcha = 
+    generated_captcha = random.choice(captcha_images)
     await VotingState.choice.set()
-    await state.update_data(choice=choice_data)
+    await state.update_data(choice=choice_data, captcha=generated_captcha)
     await bot.send_message(
         chat_id=callback_query.from_user.id,
         text=f"What is this number: {generated_captcha[0]}?",
@@ -88,7 +88,8 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 @disp.message_handler(state=VotingState.choice)
 async def process_choice(message: types.Message, state: FSMContext):
-    if message.text == "2222":
+    data = await state.get_data()
+    if message.text == data.get("captcha")[1]:
         await bot.send_message(message.chat.id, "Captcha correct!")
         data = await state.get_data()
         choice_data = data.get("choice")
