@@ -10,8 +10,11 @@ def teachers_list(page_number):
         print("Page number: ", page_number * 8)
         inner_list = []
         print("Rough Calculation: ", [1, 2][::-1][k - 1] * 4)
+        print(
+            f"From {(page_number * 8) - [1, 2][::-1][k - 1] * 4} To {page_number * (k * 4)}"
+        )
         for i in range(
-            (page_number * 8) - [1, 2][::-1][k - 1] * 4, page_number * (k * 4)
+            (page_number * 8) - [1, 2][::-1][k - 1] * 4, (page_number * 4) * k
         ):
             inner_list.append(
                 InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
@@ -23,5 +26,6 @@ def teachers_list(page_number):
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[*teachers_list, [back_button, next_button]]
     )
+    print(teachers_list)
     print("\n\n")
     return buttons
