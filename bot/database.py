@@ -4,7 +4,7 @@ from utils import get_teachers_name
 
 
 class Database:
-    def __init__(self, name: str = "db.sqlite3") -> None:
+    def __init__(self, name: str = "../db.sqlite3") -> None:
         self.connection = sqlite3.connect(name)
         self.cursor = self.connection.cursor()
         self.create_users_table()
@@ -71,7 +71,9 @@ class Database:
         voted = self.cursor.execute(
             """SELECT is_voted FROM users WHERE telegram_id=?""", (telegram_id,)
         ).fetchone()
-        return False if not voted else bool(voted[0])
+        if voted == () or voted is None or len(voted) == 0:
+            return False
+        return bool(voted[0])
 
 
 if __name__ == "__main__":
