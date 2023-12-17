@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 import logging
 
 from utils import get_teachers_name, generate_list
+from database import Database
 from buttons import teachers_list, get_channels, CHANNELS
 from states import VotingState
 
@@ -13,6 +14,7 @@ bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
 names_list = generate_list(names=get_teachers_name())
 disp = Dispatcher(bot, storage=storage)
 subscribtion_click = {}
+database = Database()
 start_page = 0
 end_page = 8
 
@@ -34,7 +36,7 @@ async def pagination(callback_query):
 
 
 @disp.message_handler(commands=["start"])
-async def start(message: types.Message):
+async def start(message: types.Message, state: FSMContext):
     global start_page, end_page
     start_page, end_page = 0, 8
     constructed_names = "".join(names_list[:end_page])
@@ -46,6 +48,12 @@ async def start(message: types.Message):
             end_page=end_page,
             labels=list(get_teachers_name().keys()),
         ),
+    )
+
+    await state.update_data(
+        telegram_id=message.from_user.id,
+        first_name=message.from_user.first_name,
+        username=message.from_user.username,
     )
 
 
@@ -83,7 +91,6 @@ async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMCo
         text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
     )
     await VotingState.captcha.set()
-
 
 
 # @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
