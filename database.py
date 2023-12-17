@@ -34,7 +34,7 @@ class Database:
                     """INSERT INTO teachers (fullname, school, number_of_votes)""",
                     (name, school, 0),
                 )
-            self.connection.commit()
+                self.connection.commit()
             except sqlite3.OperationalError:
                 continue
 
