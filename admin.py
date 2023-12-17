@@ -1,6 +1,3 @@
-from main import disp, types
-
-
-@disp.message_handler(commands=["test"])
-async def testing(message: types.Message):
-    await message.answer("hello")
+# channel creation
+# send advertise message to users
+# bot activity in certain time period
