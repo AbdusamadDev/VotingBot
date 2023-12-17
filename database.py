@@ -26,9 +26,9 @@ class Database:
         )
         self.connection.commit()
 
-    def voting(self, telegram_id):
+    def voting(self, telegram_id, boolean):
         self.cursor.execute(
-            """UPDATE users SET is_voted = 1 WHERE telegram_id = ?;""",
-            (telegram_id,),
+            """UPDATE users SET is_voted = ? WHERE telegram_id = ?;""",
+            (boolean, telegram_id),
         )
         self.connection.commit()
