@@ -13,25 +13,17 @@ def teachers_list(start_page, end_page, labels):
     ]
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
-    print("___________________")
-    print(
-        [
-            teachers_list(part_1),
-            teachers_list(part_2),
-            [
-                [back_button if start_page >= 0 else []],
-                *[next_button if end_page >= len(labels) else []],
-            ],
-        ]
-    )
+    directions = []
+    if start_page in [0, 1]:
+        directions.append(next_button)
+    if end_page == len(labels):
+        directions.append(back_button)
+    print(directions)
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[
             teachers_list(part_1),
             teachers_list(part_2),
-            [
-                back_button if start_page >= 0 else [],
-                next_button if end_page >= len(labels) else [],
-            ],
+            directions,
         ]
     )
     return buttons
