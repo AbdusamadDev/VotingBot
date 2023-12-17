@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
-from buttons import teachers_list, get_users
+from buttons import teachers_list
 from states import VotingState
 from database import Database
 from utils import (
@@ -22,8 +22,6 @@ disp = Dispatcher(bot, storage=storage)
 ADMIN_ID = get_credentials().get("admin_id", None)
 subscribtion_click = {}
 database = Database()
-users_start_page = 0
-users_end_page = 8
 start_page = 0
 end_page = 8
 
@@ -32,21 +30,25 @@ end_page = 8
 ####################################################################################
 ####################################################################################
 # _______________________________    USER ACTIONS    _______________________________
-async def pagination(callback_query, data, button):
+async def pagination(callback_query):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
     )
     await bot.send_message(
         callback_query.from_user.id,
         "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-        + "".join(data),
-        reply_markup=button,
+        + "".join(names_list[start_page:end_page]),
+        reply_markup=teachers_list(
+            start_page=start_page,
+            end_page=end_page,
+            labels=list(get_teachers_name().keys()),
+        ),
     )
 
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    if ADMIN_ID + 5 != message.from_user.id:
+    if ADMIN_ID != message.from_user.id:
         if database.is_already_voted(message.from_user.id):
             await message.answer("Siz allaqachon ovoz berib bolgansiz!")
         else:
@@ -59,7 +61,7 @@ async def start(message: types.Message):
                 reply_markup=teachers_list(
                     start_page=start_page,
                     end_page=end_page,
-                    labels=[(key, value) for key, value in get_teachers_name().items()],
+                    labels=list(get_teachers_name().keys()),
                 ),
             )
             database.add_user(
@@ -76,16 +78,7 @@ async def next_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page += 8
     start_page = end_page - 8
-    print(start_page, end_page)
-    await pagination(
-        callback_query,
-        names_list[start_page:end_page],
-        teachers_list(
-            start_page=start_page,
-            end_page=end_page,
-            labels=[(key, value) for key, value in get_teachers_name().items()],
-        ),
-    )
+    await pagination(callback_query)
 
 
 @disp.callback_query_handler(lambda query: query.data == "back")
@@ -93,16 +86,7 @@ async def back_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page -= 8
     start_page = end_page - 8
-    print(start_page, end_page)
-    await pagination(
-        callback_query,
-        names_list[start_page:end_page],
-        teachers_list(
-            start_page=start_page,
-            end_page=end_page,
-            labels=[(key, value) for key, value in get_teachers_name().items()],
-        ),
-    )
+    await pagination(callback_query)
 
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
@@ -131,7 +115,6 @@ async def process_choice(message: types.Message, state: FSMContext):
     if message.text == data.get("captcha")[1]:
         data = await state.get_data()
         choice_data = data.get("choice")
-        print("Choice Data: ", choice_data)
         await bot.send_message(
             message.chat.id,
             f"Ovoz berganingiz uchun tashakkur!",
@@ -149,16 +132,6 @@ async def process_choice(message: types.Message, state: FSMContext):
 ####################################################################################
 ####################################################################################
 # _______________________________   ADMIN ACTIONS    _______________________________
-@disp.message_handler(commands=["users"])
-async def users(message: types.Message):
-    await message.answer(
-        "Here you are",
-        reply_markup=get_users(
-            usernames=database.get_usernames(),
-            start_page=users_start_page,
-            end_page=users_end_page,
-        ),
-    )
 
 
 if __name__ == "__main__":
