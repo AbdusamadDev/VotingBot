@@ -66,4 +66,4 @@ class Database:
 
 if __name__ == "__main__":
     database = Database()
-    database.voting(2003049919, 1, "1 - maktab")
+    database.voting(2003049919, "1 - maktab")

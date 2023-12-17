@@ -90,16 +90,19 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 async def process_choice(message: types.Message, state: FSMContext):
     data = await state.get_data()
     if message.text == data.get("captcha")[1]:
-        await bot.send_message(message.chat.id, "Captcha correct!")
         data = await state.get_data()
         choice_data = data.get("choice")
         await bot.send_message(
             message.chat.id,
-            f"State: {VotingState.choice.state}\nChoice Data: {choice_data}",
+            f"Ovoz berganingiz uchun tashakkur!",
         )
+        print(choice_data)
+        database.voting(message.from_user.id, choice_data)
         await state.finish()
     else:
-        await bot.send_message(message.chat.id, "Captcha incorrect. Please try again.")
+        await bot.send_message(
+            message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
+        )
 
 
 if __name__ == "__main__":
