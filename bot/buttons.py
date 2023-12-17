@@ -5,24 +5,27 @@ def teachers_list(start_page, end_page, labels):
     # labels: [("", "")]
     part_1 = (start_page, start_page + 4)
     part_2 = (start_page + 4, end_page)
-    teachers_list = lambda limit: [
-        InlineKeyboardButton(
-            text=str(labels[i][0]), callback_data=f"School:{labels[i][0]}"
-        )
-        for i in range(*limit)
-    ]
+
+    def create_teachers_list(limit):
+        return [
+            InlineKeyboardButton(
+                text=str(labels[i][0]), callback_data=f"School:{labels[i][0]}"
+            )
+            for i in range(*limit)
+        ]
+
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
     directions = []
-    if start_page <= len(labels):
-        directions.append(next_button)
     if end_page >= 0:
         directions.append(back_button)
+    if start_page <= len(labels):
+        directions.append(next_button)
     print(directions)
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[
-            teachers_list(part_1),
-            teachers_list(part_2),
+            create_teachers_list(part_1),
+            create_teachers_list(part_2),
             directions,
         ]
     )
