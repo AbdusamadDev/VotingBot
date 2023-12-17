@@ -5,7 +5,7 @@ import logging
 import random
 
 from utils import get_teachers_name, generate_list, captcha_images
-from buttons import teachers_list
+from buttons import teachers_list, get_channels
 from states import VotingState
 from database import Database
 
@@ -88,11 +88,11 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
         await VotingState.choice.set()
         await state.update_data(choice=choice_data, captcha=generated_captcha)
         await bot.send_photo(
-            chat_id=callback_query.from_user.id, photo=open(generated_captcha[0], "rb")
+            chat_id=callback_query.from_user.id, photo=generated_captcha[0]
         )
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f"Quyidagi rasmda nechi raqam berilgan?",
+            text=f"Quyidagi rasmda nechi raqam berilgan: {generated_captcha[0]}?",
         )
 
 

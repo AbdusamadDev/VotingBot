@@ -1,119 +1,99 @@
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram import Bot, executor, Dispatcher, types
-from aiogram.dispatcher import FSMContext
-import logging
-import random
+import sqlite3
 
-from utils import get_teachers_name, generate_list, captcha_images
-from buttons import teachers_list, get_channels
-from states import VotingState
-from database import Database
-
-storage = MemoryStorage()
-logging.basicConfig(level=logging.INFO)
-bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
-names_list = generate_list(names=get_teachers_name())
-disp = Dispatcher(bot, storage=storage)
-subscribtion_click = {}
-database = Database()
-start_page = 0
-end_page = 8
+from utils import get_teachers_name
 
 
-async def pagination(callback_query):
-    await bot.delete_message(
-        callback_query.from_user.id, callback_query.message.message_id
-    )
-    await bot.send_message(
-        callback_query.from_user.id,
-        "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-        + "".join(names_list[start_page:end_page]),
-        reply_markup=teachers_list(
-            start_page=start_page,
-            end_page=end_page,
-            labels=list(get_teachers_name().keys()),
-        ),
-    )
+class Database:
+    def __init__(self, name: str = "../db.sqlite3") -> None:
+        self.connection = sqlite3.connect(name)
+        self.cursor = self.connection.cursor()
+        self.create_users_table()
+        self.create_teachers_table()
 
-
-@disp.message_handler(commands=["start"])
-async def start(message: types.Message):
-    if database.is_already_voted(message.from_user.id):
-        await message.answer("Siz allaqachon ovoz berib bolgansiz!")
-    else:
-        global start_page, end_page
-        start_page, end_page = 0, 8
-        constructed_names = "".join(names_list[:end_page])
-        await message.answer(
-            f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-            + constructed_names,
-            reply_markup=teachers_list(
-                start_page=start_page,
-                end_page=end_page,
-                labels=list(get_teachers_name().keys()),
-            ),
+    def create_users_table(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users 
+            (id INTEGER, username TEXT, first_name TEXT, telegram_id INTEGER UNIQUE,
+            is_voted INTEGER, PRIMARY KEY ('id'))
+            """
         )
-        database.add_user(
-            telegram_id=message.from_user.id,
-            first_name=message.from_user.first_name,
-            username=message.from_user.username,
+        self.connection.commit()
+
+    def create_teachers_table(self):
+        self.cursor.execute(
+            """CREATE TABLE IF NOT EXISTS teachers 
+            (id INTEGER, fullname TEXT, school TEXT UNIQUE, number_of_votes INTEGER, 
+            PRIMARY KEY ('id'))""",
         )
+        for school, name in get_teachers_name().items():
+            try:
+                self.cursor.execute(
+                    """INSERT INTO teachers (fullname, school, number_of_votes) 
+                    VALUES (?, ?, ?)""",
+                    (name, school, 0),
+                )
+            except sqlite3.IntegrityError:
+                continue
+        self.connection.commit()
 
+    def add_user(self, username, first_name, telegram_id):
+        try:
+            self.cursor.execute(
+                """INSERT INTO users 
+                (username, first_name, telegram_id, is_voted) 
+                VALUES (?, ?, ?, ?)""",
+                (username, first_name, telegram_id, 0),
+            )
+        except sqlite3.IntegrityError:
+            pass
+        self.connection.commit()
 
-@disp.callback_query_handler(lambda query: query.data == "next")
-async def next_handler(callback_query: types.CallbackQuery):
-    global start_page, end_page
-    end_page += 8
-    start_page = end_page - 8
-    await pagination(callback_query)
-
-
-@disp.callback_query_handler(lambda query: query.data == "back")
-async def back_handler(callback_query: types.CallbackQuery):
-    global start_page, end_page
-    end_page -= 8
-    start_page = end_page - 8
-    await pagination(callback_query)
-
-
-@disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
-async def choice(callback_query: types.CallbackQuery, state: FSMContext):
-    if database.is_already_voted(callback_query.from_user.id):
-        await bot.send_message(
-            "Siz allaqachon ovoz berib bolgansiz!", chat_id=callback_query.from_user.id
+    def voting(self, telegram_id, school):
+        self.cursor.execute(
+            """UPDATE users SET is_voted = 1 WHERE telegram_id = ?;""",
+            (telegram_id,),
         )
-    else:
-        choice_data = callback_query.data.split(":")[1]
-        generated_captcha = random.choice(captcha_images)
-        await VotingState.choice.set()
-        await state.update_data(choice=choice_data, captcha=generated_captcha)
-        await bot.send_photo(
-            chat_id=callback_query.from_user.id, photo=generated_captcha[0]
+        number_of_votes = self.cursor.execute(
+            """SELECT number_of_votes FROM teachers WHERE school LIKE ?""",
+            (school,),
         )
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f"Quyidagi rasmda nechi raqam berilgan: {generated_captcha[0]}?",
+        if number_of_votes and number_of_votes is not None:
+            number_of_votes = number_of_votes.fetchone()[0]
+        self.cursor.execute(
+            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""",
+            (number_of_votes + 1, school),
         )
+        self.connection.commit()
 
+    def is_already_voted(self, telegram_id):
+        voted = self.cursor.execute(
+            """SELECT is_voted FROM users WHERE telegram_id=?""", (telegram_id,)
+        ).fetchone()
+        if voted == () or voted is None or len(voted) == 0:
+            return False
+        return bool(voted[0])
 
-@disp.message_handler(state=VotingState.choice)
-async def process_choice(message: types.Message, state: FSMContext):
-    data = await state.get_data()
-    if message.text == data.get("captcha")[1]:
-        data = await state.get_data()
-        choice_data = data.get("choice")
-        await bot.send_message(
-            message.chat.id,
-            f"Ovoz berganingiz uchun tashakkur!",
-        )
-        print(choice_data)
-        database.voting(message.from_user.id, choice_data)
-        await state.finish()
-    else:
-        await bot.send_message(
-            message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
+    def get_user_id(self, username):
+        user = self.cursor.execute(
+            """SELECT telegram_id FROM users WHERE username=?""",
+            (username,),
+        ).fetchone()
+        return user[0] if user else 0
+
+    def get_usernames(self):
+        users = self.cursor.execute("""SELECT username FROM users;""")
+        return (
+            [(user[0], index) for index, user in enumerate(users, start=1)]
+            if users
+            else []
         )
 
 
 if __name__ == "__main__":
-    executor.start_polling(disp, skip_updates=True)
+    database = Database()
+    for i in range(20):
+        database.add_user(
+            "User " + str(i), first_name="Firstname " + str(i), telegram_id=i
+        )
+    print(database.get_usernames())
