@@ -21,3 +21,15 @@ def teachers_list(start_page, end_page, labels):
         ]
     )
     return buttons
+
+
+CHANNELS = [("@LAYFXAK_KANAL", "Layfxak kanal official")]
+
+
+def get_channels():
+    buttons = [
+        InlineKeyboardButton(text=channel[-1], callback_data=f"Channel:{channel[0]}")
+        for channel in CHANNELS
+    ]
+    channels_buttons = InlineKeyboardMarkup(inline_keyboard=[buttons])
+    return channels_buttons

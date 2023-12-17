@@ -68,35 +68,13 @@ async def back_handler(callback_query: types.CallbackQuery):
 async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     choice = callback_query.data.split(":")
     await bot.send_message(
-        chat_id=callback_query.from_user.id, text=f"Your choice: {choice[-1]}"
+        chat_id=callback_query.from_user.id, text=f"Ovoz berish : {choice[-1]}"
     )
     await VotingState.choice.set()
     await state.update_data(choice=choice)
 CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
-async def check_subscription(user_id):
-    try:
-        # Get chat member info
-        chat_member = await bot.get_chat_member(chat_id=CHANNEL_USERNAME, user_id=user_id)
 
-        # Check if the user is a member of the channel
-        if chat_member.status in [types.ChatMemberStatus.MEMBER, types.ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR]:
-            return True
-        else:
-            return False
-
-    except Exception as e:
-        logging.error(f"Error checking subscription: {e}")
-        return False
-
-@disp.message_handler(commands=['get'])
-async def start(message: types.Message):
-    user_id = message.from_user.id
-
-    if await check_subscription(user_id):
-        await message.reply("You are subscribed to the channel!")
-    else:
-        await message.reply("To access this bot, you need to subscribe to the channel first.")
 
 
 
