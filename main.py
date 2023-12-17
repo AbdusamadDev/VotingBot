@@ -74,5 +74,18 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await state.update_data(choice=choice)
 
 
+@disp.message_handler(commands=["mysubscriptions"])
+async def my_subscriptions(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        subscribed_channels = data.get("subscribed_channels", [])
+
+    if subscribed_channels:
+        await message.answer(
+            "Your subscribed channels:\n" + "\n".join(subscribed_channels)
+        )
+    else:
+        await message.answer("You have not subscribed to any channels yet.")
+
+
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)
