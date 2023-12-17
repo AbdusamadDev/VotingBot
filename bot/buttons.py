@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 def teachers_list(start_page, end_page, labels):
+    # labels: [("", "")]
     part_1 = (start_page, start_page + 4)
     part_2 = (start_page + 4, end_page)
     print(labels)

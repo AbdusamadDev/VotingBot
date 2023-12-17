@@ -82,7 +82,7 @@ async def next_handler(callback_query: types.CallbackQuery):
         teachers_list(
             start_page=start_page,
             end_page=end_page,
-            labels=list(get_teachers_name().keys()),
+            labels=[(key, value) for key, value in get_teachers_name().items()],
         ),
     )
 
