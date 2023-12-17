@@ -22,6 +22,8 @@ disp = Dispatcher(bot, storage=storage)
 ADMIN_ID = get_credentials().get("admin_id", None)
 subscribtion_click = {}
 database = Database()
+users_start_page = 0
+users_end_page = 8
 start_page = 0
 end_page = 8
 
@@ -132,6 +134,16 @@ async def process_choice(message: types.Message, state: FSMContext):
 ####################################################################################
 ####################################################################################
 # _______________________________   ADMIN ACTIONS    _______________________________
+@disp.message_handler(commands=["users"])
+async def users(message: types.Message):
+    await message.answer(
+        "Here you are",
+        reply_markup=teachers_list(
+            labels=database.get_usernames(),
+            start_page=users_start_page,
+            end_page=users_end_page,
+        ),
+    )
 
 
 if __name__ == "__main__":

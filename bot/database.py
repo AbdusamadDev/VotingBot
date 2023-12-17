@@ -84,7 +84,7 @@ class Database:
 
     def get_usernames(self):
         users = self.cursor.execute("""SELECT username FROM users;""")
-        return [user[0] for user in users] if users else []
+        return [(user[0], index) for index, user in enumerate(users)] if users else []
 
 
 if __name__ == "__main__":
