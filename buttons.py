@@ -28,10 +28,12 @@ CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]
 
 def get_channels():
     buttons = [
-        InlineKeyboardButton(
-            text=channel[-1], url=channel[0], callback_data=f"Channel:{channel[0]}"
-        )
-        for channel in CHANNELS
+        InlineKeyboardButton(text=channel[-1], url=channel[0]) for channel in CHANNELS
     ]
-    channels_buttons = InlineKeyboardMarkup(inline_keyboard=[buttons])
+    subscribed_button = InlineKeyboardButton(
+        text="Obuna bo'ldim", callback_data="subscribed"
+    )
+    channels_buttons = InlineKeyboardMarkup(
+        inline_keyboard=[buttons, [subscribed_button]]
+    )
     return channels_buttons
