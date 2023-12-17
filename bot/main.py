@@ -32,25 +32,21 @@ end_page = 8
 ####################################################################################
 ####################################################################################
 # _______________________________    USER ACTIONS    _______________________________
-async def pagination(callback_query, data, button_data):
+async def pagination(callback_query, data, button):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
     )
     await bot.send_message(
         callback_query.from_user.id,
         "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-        + "".join(names_list[start_page:end_page]),
-        reply_markup=teachers_list(
-            start_page=start_page,
-            end_page=end_page,
-            labels=list(get_teachers_name().keys()),
-        ),
+        + "".join(data),
+        reply_markup=button,
     )
 
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    if ADMIN_ID != message.from_user.id:
+    if ADMIN_ID + 5 != message.from_user.id:
         if database.is_already_voted(message.from_user.id):
             await message.answer("Siz allaqachon ovoz berib bolgansiz!")
         else:
@@ -80,7 +76,15 @@ async def next_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page += 8
     start_page = end_page - 8
-    await pagination(callback_query)
+    await pagination(
+        callback_query,
+        names_list[start_page:end_page],
+        teachers_list(
+            start_page=start_page,
+            end_page=end_page,
+            labels=list(get_teachers_name().keys()),
+        ),
+    )
 
 
 @disp.callback_query_handler(lambda query: query.data == "back")
@@ -88,7 +92,15 @@ async def back_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page -= 8
     start_page = end_page - 8
-    await pagination(callback_query)
+    await pagination(
+        callback_query,
+        names_list[start_page:end_page],
+        teachers_list(
+            start_page=start_page,
+            end_page=end_page,
+            labels=list(get_teachers_name().keys()),
+        ),
+    )
 
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
