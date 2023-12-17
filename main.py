@@ -77,7 +77,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await state.update_data(choice=choice)
 
 
-@disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
+@disp.callback_query_handler(lambda query: query.data == "subscribed")
 async def subscribtion_handler(callback_query: types.CallbackQuery):
     subscribtion_click[callback_query.from_user.id] = callback_query.data.split(":")[1]
     print(subscribtion_click)
