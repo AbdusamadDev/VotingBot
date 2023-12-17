@@ -14,7 +14,7 @@ class Database:
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users 
-            (id INTEGER, username TEXT, first_name TEXT, telegram_id INTEGER,
+            (id INTEGER, username TEXT, first_name TEXT, telegram_id INTEGER UNIQUE,
             is_voted INTEGER, PRIMARY KEY ('id'))
             """
         )
@@ -38,12 +38,15 @@ class Database:
         self.connection.commit()
 
     def add_user(self, username, first_name, telegram_id):
-        self.cursor.execute(
-            """INSERT INTO users 
-            (username, first_name, telegram_id, is_voted) 
-            VALUES (?, ?, ?, ?)""",
-            (username, first_name, telegram_id, 0),
-        )
+        try:
+            self.cursor.execute(
+                """INSERT INTO users 
+                (username, first_name, telegram_id, is_voted) 
+                VALUES (?, ?, ?, ?)""",
+                (username, first_name, telegram_id, 0),
+            )
+        except sqlite3.IntegrityError:
+            pass
         self.connection.commit()
 
     def voting(self, telegram_id, school):
@@ -58,10 +61,16 @@ class Database:
         if number_of_votes:
             number_of_votes = number_of_votes.fetchone()[0]
         self.cursor.execute(
-            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""", (number_of_votes + 1, school)
+            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""",
+            (number_of_votes + 1, school),
         )
         print(number_of_votes)
         self.connection.commit()
+
+    def is_already_voted(self, telegram_id):
+        voted = self.cursor.execute(
+            """SELECT is_voted FROM users WHERE telegram_id=?""",
+        )
 
 
 if __name__ == "__main__":

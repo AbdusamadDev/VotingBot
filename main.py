@@ -76,7 +76,7 @@ async def back_handler(callback_query: types.CallbackQuery):
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
 async def choice(callback_query: types.CallbackQuery, state: FSMContext):
-    choice_data = callback_query.data.split(":")
+    choice_data = callback_query.data.split(":")[1]
     generated_captcha = random.choice(captcha_images)
     await VotingState.choice.set()
     await state.update_data(choice=choice_data, captcha=generated_captcha)

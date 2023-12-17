@@ -16,8 +16,7 @@ def get_teachers_name():
 def generate_list(names):
     if not isinstance(names, dict):
         return ""
-    return [f"{key}. {value}.\n\n" for key, value in names.items()]
-
+    return [f"{key}. {value}.\n\n" for key, value in names.items()]    
 
 if __name__ == "__main__":
     print(get_teachers_name())
