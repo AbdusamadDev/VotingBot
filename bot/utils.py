@@ -1,5 +1,8 @@
+import os
+
+
 def get_teachers_name():
-    with open("list.txt", "rb") as file:
+    with open("../docs/list.txt", "rb") as file:
         names = {}
         for name in file.read().decode().split("\n"):
             try:
@@ -13,11 +16,33 @@ def get_teachers_name():
     return {}
 
 
+captcha_images = [
+    (
+        os.path.join(
+            "".join(
+                [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
+            ),
+            "docs/captcha",
+            filename,
+        ).replace("\\", "/"),
+        filename.split(".")[0],
+    )
+    for filename in os.listdir(
+        os.path.join(
+            "".join(
+                [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
+            ),
+            "docs/captcha",
+        )
+    )
+]
+
 
 def generate_list(names):
     if not isinstance(names, dict):
         return ""
-    return [f"{key}. {value}.\n\n" for key, value in names.items()]    
+    return [f"{key}. {value}.\n\n" for key, value in names.items()]
+
 
 if __name__ == "__main__":
     print(get_teachers_name())

@@ -3,9 +3,8 @@ from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import logging
 import random
-import os
 
-from utils import get_teachers_name, generate_list
+from utils import get_teachers_name, generate_list, captcha_images
 from buttons import teachers_list, get_channels
 from states import VotingState
 from database import Database
@@ -19,15 +18,6 @@ subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
-captcha_images = [
-    (
-        os.path.join(
-            "".join(
-                [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
-            ), 
-        ), filename.split(".")[0] for filename in os.listdir()
-    )
-]
 
 
 async def pagination(callback_query):
@@ -97,6 +87,9 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
         generated_captcha = random.choice(captcha_images)
         await VotingState.choice.set()
         await state.update_data(choice=choice_data, captcha=generated_captcha)
+        await bot.send_photo(
+            chat_id=callback_query.from_user.id, photo=generated_captcha[0]
+        )
         await bot.send_message(
             chat_id=callback_query.from_user.id,
             text=f"Quyidagi rasmda nechi raqam berilgan: {generated_captcha[0]}?",
