@@ -83,9 +83,10 @@ class Database:
         return user[0] if user else 0
 
     def get_usernames(self):
-        users = self.cursor.execute()
+        users = self.cursor.execute("""SELECT username FROM users;""")
+        return [user[0] for user in users] if users else []
 
 
 if __name__ == "__main__":
     database = Database()
-    print(database.is_already_voted(2003049919))
+    print(database.get_usernames())
