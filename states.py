@@ -2,7 +2,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
 class VotingState(StatesGroup):
-    choice = State()
-    username = State()
     telegram_id = State()
-    
+    first_name = State()
+    username = State()
+    choice = State()

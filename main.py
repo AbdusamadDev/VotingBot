@@ -1,9 +1,11 @@
-from aiogram import Bot, executor, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram import Bot, executor, Dispatcher, types
+from aiogram.dispatcher import FSMContext
 import logging
 
 from utils import get_teachers_name, generate_list
 from buttons import teachers_list
+from states import VotingState
 
 logging.basicConfig(level=logging.INFO)
 storage = MemoryStorage()
@@ -63,11 +65,13 @@ async def back_handler(callback_query: types.CallbackQuery):
 
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
-async def choice(callback_query: types.CallbackQuery):
+async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     choice = callback_query.data.split(":")
     await bot.send_message(
         chat_id=callback_query.from_user.id, text=f"Your choice: {choice[-1]}"
     )
+    await VotingState.choice.set()
+    await state.update_data(choice=choice)
 
 
 if __name__ == "__main__":
