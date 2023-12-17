@@ -79,49 +79,29 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 @disp.callback_query_handler(lambda query: query.data == "subscribed")
 async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMContext):
-    print(await state.get_data())
     await bot.send_message(
         text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
     )
     await VotingState.captcha.set()
 
 
-@disp.inline_handler(lambda query: True)
-async def inline_handler(query: types.InlineQuery):
-    channels_buttons = get_channels()
 
-    # Create an InlineQueryResultArticle with a link to the button
-    result_id = "1"
-    title = "Click me"
-    input_message_content = types.InputTextMessageContent("You clicked the button!")
-    inline_query_result = types.InlineQueryResultArticle(
-        id=result_id,
-        title=title,
-        input_message_content=input_message_content,
-        reply_markup=channels_buttons,
-    )
+# @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
+# async def channel_button_handler(callback_query: types.CallbackQuery):
+#     channel_url = next(
+#         (
+#             channel[0]
+#             for channel in CHANNELS
+#             if callback_query.data.endswith(channel[1])
+#         ),
+#         None,
+#     )
+#     if channel_url:
+#         print(f"Clicked URL: {channel_url}")
 
-    # Answer the inline query with the created result
-    await bot.answer_inline_query(query.id, results=[inline_query_result])
-
-
-@disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
-async def channel_button_handler(callback_query: types.CallbackQuery):
-    # Extract the URL from the callback data
-    channel_url = next(
-        (
-            channel[0]
-            for channel in CHANNELS
-            if callback_query.data.endswith(channel[1])
-        ),
-        None,
-    )
-    if channel_url:
-        print(f"Clicked URL: {channel_url}")
-
-    print("Button click@@@@!!!!")
-    # VotingState.channel_name.set()
-    # await state.update_data(channel_name=callback_query.data.split(":")[1])
+#     print("Button click@@@@!!!!")
+#     # VotingState.channel_name.set()
+#     # await state.update_data(channel_name=callback_query.data.split(":")[1])
 
 
 # @disp.message_handler(state=VotingState.captcha)
@@ -132,7 +112,7 @@ async def channel_button_handler(callback_query: types.CallbackQuery):
 #     await message.answer("Thank you for your response!")
 
 
-CHANNEL_USERNAME = "@LAYFXAK_KANAL"
+# CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
 
 if __name__ == "__main__":
