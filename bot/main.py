@@ -19,7 +19,13 @@ subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
-captcha_images = [(os.path.join(os.get))]
+captcha_images = [
+    (
+        os.path.join(
+            "".join(("/" + i for i in os.path.abspath(__name__).split("/")[:-1]))
+        )
+    )
+]
 
 
 async def pagination(callback_query):
