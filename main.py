@@ -18,7 +18,11 @@ async def pagination(callback_query):
     await bot.send_message(
         callback_query.from_user.id,
         "You are an asshole!",
-        reply_markup=teachers_list(start_page=start_page, end_page=end_page, get_teachers_name.keys()),
+        reply_markup=teachers_list(
+            start_page=start_page,
+            end_page=end_page,
+            labels=list(get_teachers_name().keys()),
+        ),
     )
 
 
@@ -28,7 +32,11 @@ async def start(message: types.Message):
     start_page, end_page = 1, 8
     await message.answer(
         "Hi, wassup",
-        reply_markup=teachers_list(start_page=start_page, end_page=end_page),
+        reply_markup=teachers_list(
+            start_page=start_page,
+            end_page=end_page,
+            labels=list(get_teachers_name().keys()),
+        ),
     )
 
 

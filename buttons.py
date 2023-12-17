@@ -14,8 +14,7 @@ def teachers_list(start_page, end_page, labels):
         inline_keyboard=[
             teachers_list(part_1),
             teachers_list(part_2),
-            [back_button, next_button],
+            [back_button if len(labels) > 0, next_button if len(labels) > end_page else []],
         ]
     )
-    print(start_page, end_page)
     return buttons
