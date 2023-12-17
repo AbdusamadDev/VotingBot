@@ -9,6 +9,17 @@ disp = Dispatcher(bot)
 page_number = 1
 
 
+async def pagination(callback_query):
+    await bot.delete_message(
+        callback_query.from_user.id, callback_query.message.message_id
+    )
+    await bot.send_message(
+        callback_query.from_user.id,
+        "You are an asshole!",
+        reply_markup=teachers_list(page_number),
+    )
+
+
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
     await message.answer("Hi, wassup", reply_markup=teachers_list(page_number))
@@ -18,14 +29,14 @@ async def start(message: types.Message):
 async def respond(callback_query: types.CallbackQuery):
     global page_number
     page_number += 1
-    await bot.delete_message(
-        callback_query.from_user.id, callback_query.message.message_id
-    )
-    await bot.send_message(
-        callback_query.from_user.id,
-        "You are an asshole!",
-        reply_markup=teachers_list(page_number),
-    )
+    await pagination(callback_query)
+
+
+@disp.callback_query_handler(lambda query: query.data == "back")
+async def respond(callback_query: types.CallbackQuery):
+    global page_number
+    page_number -= 1
+    await pagination(callback_query)
 
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("School"))
