@@ -90,7 +90,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
         await state.update_data(choice=choice_data, captcha=generated_captcha)
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f"What is this number: {generated_captcha[0]}?",
+            text=f"Quyidagi rasmda nechi raqam berilgan: {generated_captcha[0]}?",
         )
 
 
