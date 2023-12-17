@@ -59,7 +59,7 @@ async def start(message: types.Message):
                 reply_markup=teachers_list(
                     start_page=start_page,
                     end_page=end_page,
-                    labels=list(get_teachers_name().keys()),
+                    labels=[(key, value) for key, value in get_teachers_name().items()],
                 ),
             )
             database.add_user(
@@ -76,6 +76,7 @@ async def next_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page += 8
     start_page = end_page - 8
+    print(start_page, end_page)
     await pagination(
         callback_query,
         names_list[start_page:end_page],
@@ -92,6 +93,7 @@ async def back_handler(callback_query: types.CallbackQuery):
     global start_page, end_page
     end_page -= 8
     start_page = end_page - 8
+    print(start_page, end_page)
     await pagination(
         callback_query,
         names_list[start_page:end_page],

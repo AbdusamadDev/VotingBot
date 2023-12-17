@@ -64,7 +64,6 @@ class Database:
             """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""",
             (number_of_votes + 1, school),
         )
-        print(number_of_votes)
         self.connection.commit()
 
     def is_already_voted(self, telegram_id):
