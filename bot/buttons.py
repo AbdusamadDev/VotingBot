@@ -6,7 +6,7 @@ def teachers_list(start_page, end_page, labels):
     part_2 = (start_page + 4, end_page)
     print(labels)
     teachers_list = lambda limit: [
-        InlineKeyboardButton(text=str(labels[i]), callback_data=f"School:{labels[i]}")
+        InlineKeyboardButton(text=str(labels[i][1]), callback_data=f"School:{labels[i]}")
         for i in range(*limit)
     ]
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")

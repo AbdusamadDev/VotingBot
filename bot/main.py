@@ -32,7 +32,7 @@ end_page = 8
 ####################################################################################
 ####################################################################################
 # _______________________________    USER ACTIONS    _______________________________
-async def pagination(callback_query):
+async def pagination(callback_query, data, button_data):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
     )
