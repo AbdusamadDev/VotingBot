@@ -20,6 +20,10 @@ start_page = 0
 end_page = 8
 
 
+####################################################################################
+####################################################################################
+####################################################################################
+# _______________________________    USER ACTIONS    _______________________________
 async def pagination(callback_query):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
@@ -114,6 +118,13 @@ async def process_choice(message: types.Message, state: FSMContext):
             message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
         )
 
+####################################################################################
+####################################################################################
+####################################################################################
+# _______________________________   ADMIN ACTIONS    _______________________________
+@disp.message_handler(commands=["start"], user_is_admin=True)
+async def start_for_admin(message: types.Message):
+    await message.answer("Wassup admin")
 
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)
