@@ -87,20 +87,32 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 
 
 @disp.callback_query_handler(lambda query: str(query.data).startswith("subscribed"))
-async def subscription_handler(callback_query: types.CallbackQuery, state: FSMContext):
-    await VotingState.captcha.set()
-
-    # Choose a random captcha from the list
-    generated_captcha = random.choice(captcha_images)
-
-    # Update the state data with the generated captcha
-
-    # Send the captcha to the user
+async def subscription_handler(callback_query: types.CallbackQuery):
+    # await VotingState.captcha.set()
+    # generated_captcha = random.choice(captcha_images)   
+    # await state.update_data(captcha=generated_captcha[0])
     await bot.send_message(
-        text=f"Captchadan uting: manu nichchi {generated_captcha[0]}?",
+        text="Captchadan uting: manu nichchi {generated_captcha[0]}?",
         chat_id=callback_query.from_user.id,
     )
-    await state.update_data(captcha=generated_captcha)
+
+
+# @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
+# async def channel_button_handler(callback_query: types.CallbackQuery):
+#     channel_url = next(
+#         (
+#             channel[0]
+#             for channel in CHANNELS
+#             if callback_query.data.endswith(channel[1])
+#         ),
+#         None,
+#     )
+#     if channel_url:
+#         print(f"Clicked URL: {channel_url}")
+
+#     print("Button click@@@@!!!!")
+#     # VotingState.channel_name.set()
+#     # await state.update_data(channel_name=callback_query.data.split(":")[1])
 
 
 @disp.message_handler(state=VotingState.captcha)
