@@ -23,7 +23,7 @@ async def pagination(callback_query):
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
     global page_number
-    page_number = 0
+    page_number = 1
     await message.answer("Hi, wassup", reply_markup=teachers_list(page_number))
 
 

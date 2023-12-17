@@ -6,10 +6,10 @@ from utils import get_teachers_name
 def teachers_list(page_number):
     teachers_list = []
     for k in range(1, 3):
-        print(k)
-        print(page_number)
+        print("K: ", k)
+        print("Page number: ", page_number)
         inner_list = []
-        for i in range((page_number * 4) - k * 4, page_number * 4):
+        for i in range((page_number * 4) - 4, page_number * 4):
             inner_list.append(
                 InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
             )
