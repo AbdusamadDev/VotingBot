@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import get_teachers_name
 
 
-def teachers_list(page_number):
+def teachers_list(start_page, end_page):
     teachers_list = []
     for k in range(1, 3):
         print("K: ", k)
