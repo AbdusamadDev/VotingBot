@@ -1,4 +1,13 @@
 import os
+import json
+
+
+def get_credentials():
+    if not os.path.exists("../credentials.json"):
+        return None
+    with open("../credentials.json", "rb") as creds:
+        credentials = json.loads(creds.read())
+        return credentials
 
 
 def get_teachers_name():
@@ -45,4 +54,4 @@ def generate_list(names):
 
 
 if __name__ == "__main__":
-    print(get_teachers_name())
+    print(get_credentials())

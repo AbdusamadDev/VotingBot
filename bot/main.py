@@ -4,14 +4,14 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
-from utils import get_teachers_name, generate_list, captcha_images
+from utils import get_teachers_name, generate_list, captcha_images, get_credentials
 from buttons import teachers_list
 from states import VotingState
 from database import Database
 
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
+bot = Bot(token=)
 names_list = generate_list(names=get_teachers_name())
 disp = Dispatcher(bot, storage=storage)
 subscribtion_click = {}
@@ -42,8 +42,6 @@ async def pagination(callback_query):
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    bot_info = await bot.get_me()
-    print(bot_info)
     if database.is_already_voted(message.from_user.id):
         await message.answer("Siz allaqachon ovoz berib bolgansiz!")
     else:
