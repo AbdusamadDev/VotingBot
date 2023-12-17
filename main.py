@@ -78,7 +78,7 @@ async def check_subscription(user_id):
     try:
         # Get chat member info
         chat_member = await bot.get_chat_member(
-            chat_id="https://t.me/LAYFXAK_KANAL", user_id=user_id
+            chat_id="@LAYFXAK_KANAL", user_id=user_id
         )
 
         # Check if the user is a member of the channel
