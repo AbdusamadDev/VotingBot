@@ -30,9 +30,10 @@ async def pagination(callback_query):
 async def start(message: types.Message):
     global start_page, end_page
     start_page, end_page = 0, 8
+    hardcoded_names = "".join(generate_list(names=get_teachers_name()).split("\n")
     await message.answer(
         f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-        + generate_list(names=get_teachers_name()),
+        + ,
         reply_markup=teachers_list(
             start_page=start_page,
             end_page=end_page,
