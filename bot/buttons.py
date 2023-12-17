@@ -6,7 +6,7 @@ def teachers_list(start_page, end_page, labels):
     part_2 = (start_page + 4, end_page)
     print(labels)
     teachers_list = lambda limit: [
-        InlineKeyboardButton(text=labels[i], callback_data=f"School:{labels[i]}")
+        InlineKeyboardButton(text=str(labels[i]), callback_data=f"School:{labels[i]}")
         for i in range(*limit)
     ]
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
@@ -25,13 +25,17 @@ def teachers_list(start_page, end_page, labels):
 
 
 def get_users(usernames, start_page, end_page):
-    markup = InlineKeyboardMarkup()
     buttons = [
-        InlineKeyboardButton(text=username, callback_data=f"user:{username}")
+        InlineKeyboardButton(text=username[1], callback_data=f"user:{username[0]}")
         for username in usernames
     ]
-    markup.add(butt)
-    return markup if len(usernames) <= 8 else teachers_list(start_page, end_page)
+    print(buttons)
+    markup = InlineKeyboardMarkup(inline_keyboard=[buttons])
+    return (
+        markup
+        if len(usernames) <= 8
+        else teachers_list(start_page, end_page, labels=usernames)
+    )
 
 
 # CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]

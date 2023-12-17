@@ -84,9 +84,17 @@ class Database:
 
     def get_usernames(self):
         users = self.cursor.execute("""SELECT username FROM users;""")
-        return [(user[0], index - 1) for index, user in enumerate(users)] if users else []
+        return (
+            [(user[0], index) for index, user in enumerate(users, start=1)]
+            if users
+            else []
+        )
 
 
 if __name__ == "__main__":
     database = Database()
+    for i in range(20):
+        database.add_user(
+            "User " + str(i), first_name="Firstname " + str(i), telegram_id=i
+        )
     print(database.get_usernames())
