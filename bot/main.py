@@ -3,6 +3,7 @@ from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import logging
 import random
+import os
 
 from utils import get_teachers_name, generate_list
 from buttons import teachers_list, get_channels
@@ -18,7 +19,7 @@ subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
-captcha_images = [("image.jpg", "2005"), ("image2.jpg", "5566")]
+captcha_images = [(os.path.join(os.get))]
 
 
 async def pagination(callback_query):
