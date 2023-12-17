@@ -22,8 +22,8 @@ def teachers_list(start_page, end_page, labels):
     )
     return buttons
 
-def admin_options(telegram_id):
-    
+def admin_options(usernames):
+    buttons = 
 
 
 # CHANNELS = [("https://t.me/LAYFXAK_KANAL", "Layfxak kanal official")]
