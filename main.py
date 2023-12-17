@@ -24,7 +24,7 @@ async def pagination(callback_query):
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
     global start_page, end_page
-    start_page, end_page = 1, 1
+    start_page, end_page = 1, 8
     await message.answer(
         "Hi, wassup",
         reply_markup=teachers_list(start_page=start_page, end_page=end_page),

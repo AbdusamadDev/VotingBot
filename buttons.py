@@ -6,10 +6,8 @@ from utils import get_teachers_name
 def teachers_list(start_page, end_page):
     teachers_list = []
     for k in range(1, 3):
-        print("K: ", k)
         inner_list = []
-        print("Rough Calculation: ", [1, 2][::-1][k - 1] * 4)
-        for i in range(start_page, end_page / k):
+        for i in range(start_page, end_page):
             inner_list.append(
                 InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
             )
@@ -20,6 +18,6 @@ def teachers_list(start_page, end_page):
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[*teachers_list, [back_button, next_button]]
     )
+    print(start_page, end_page)
     print(teachers_list)
-    print("\n\n")
     return buttons
