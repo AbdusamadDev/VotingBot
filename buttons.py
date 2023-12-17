@@ -8,14 +8,13 @@ def teachers_list(start_page, end_page):
         InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
         for i in range(start_page + row, end_page + row)
     ]
-    print(teachers_list)
 
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[
-            [list(teachers_list(0))],
-            [list(teachers_list(4))],
+            teachers_list(0),
+            teachers_list(4),
             [back_button, next_button],
         ]
     )
