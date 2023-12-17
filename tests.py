@@ -6,20 +6,27 @@ bot = telebot.TeleBot(API_TOKEN)
 
 @bot.message_handler(commands=['get_channels'])
 def get_channels(message):
-    # Replace with the channel usernames you want to check
-    channel_usernames = ['@LAYFXAK_KANAL', 'channel_username2']
-
     subscribed_channels = []
 
-    for channel_username in channel_usernames:
-        try:
-            chat_member = bot.get_chat_member(f'@{channel_username}', message.from_user.id)
-            if chat_member.status in ('administrator', 'member'):
-                subscribed_channels.append(channel_username)
-        except Exception as e:
-            print(f"Error checking channel {channel_username}: {e}")
+    try:
+        # Get the list of chat IDs the user is a part of
+        chat_ids = [chat.id for chat in bot.get_chat(message.from_user.id).chat_ids()]
 
-    bot.reply_to(message, f"Subscribed channels: {', '.join(subscribed_channels)}")
+        for chat_id in chat_ids:
+            try:
+                chat_member = bot.get_chat_member(chat_id, message.from_user.id)
+                if chat_member.status in ('administrator', 'member'):
+                    chat_info = bot.get_chat(chat_id)
+                    subscribed_channels.append(chat_info.username)
+            except Exception as e:
+                print(f"Error checking channel {chat_id}: {e}")
+
+        if subscribed_channels:
+            bot.reply_to(message, f"Subscribed channels: {', '.join(subscribed_channels)}")
+        else:
+            bot.reply_to(message, "You are not a member of any channels.")
+    except Exception as e:
+        print(f"Error getting chat IDs: {e}")
 
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['start', 'help'])

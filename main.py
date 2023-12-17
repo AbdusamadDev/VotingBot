@@ -87,29 +87,6 @@ async def subscribtion_handler(callback_query: types.CallbackQuery):
     await VotingState.captcha.set()
 
 
-async def get_channels_list(user_id):
-    # Get a list of updates (new messages)
-    updates = await bot.get_updates(limit=100)
-
-    # Iterate through updates to find channel information
-    channels = []
-    for update in updates:
-        # Check if the update has a message
-        if update.message:
-            # Get the chat ID
-            chat_id = update.message.chat.id
-            # Check if the user is a member of the chat (channel)
-            member = await bot.get_chat_member(chat_id, user_id)
-
-            # Check if the user is a member of the channel
-            if member.status in (
-                types.ChatMemberStatus.ADMINISTRATOR,
-                types.ChatMemberStatus.MEMBER,
-            ):
-                channels.append(update.message.chat)
-
-    return channels
-
 
 # @disp.message_handler(state=VotingState.captcha)
 # async def captcha_handler(message: types.Message, state: FSMContext):
