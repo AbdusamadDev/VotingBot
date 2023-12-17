@@ -46,19 +46,19 @@ class Database:
         )
         self.connection.commit()
 
-    def voting(self, telegram_id, boolean, school):
+    def voting(self, telegram_id, school):
         self.cursor.execute(
-            """UPDATE users SET is_voted = ? WHERE telegram_id = ?;""",
-            (boolean, telegram_id),
+            """UPDATE users SET is_voted = 1 WHERE telegram_id = ?;""",
+            (telegram_id,),
         )
         number_of_votes = self.cursor.execute(
             """SELECT number_of_votes FROM teachers WHERE school LIKE ?""",
             (school,),
         )
         if number_of_votes:
-            number_of_votes = number_of_votes.fetchone()
+            number_of_votes = number_of_votes.fetchone()[0]
         self.cursor.execute(
-            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""", (number_of_votes + 1, scho)
+            """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""", (number_of_votes + 1, school)
         )
         print(number_of_votes)
         self.connection.commit()
