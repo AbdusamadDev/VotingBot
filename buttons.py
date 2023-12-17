@@ -7,10 +7,11 @@ def teachers_list(page_number):
     teachers_list = [
         [
             InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
-            for i in range((page_number * 4) - 4, page_number * 4)
+            for i in range((page_number * 4) - k * 4, page_number * 4)
         ]
         for k in range(2)
     ]
+    print(teachers_list)
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
     buttons = InlineKeyboardMarkup(
