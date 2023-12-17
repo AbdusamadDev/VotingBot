@@ -26,6 +26,7 @@ class Database:
             (id INTEGER, fullname TEXT, school TEXT UNIQUE, number_of_votes INTEGER, 
             PRIMARY KEY ('id'))""",
         )
+        self.connection.commit()
         for school, name in get_teachers_name().items():
             try:
                 print("It is being executed: ", name)
@@ -33,9 +34,9 @@ class Database:
                     """INSERT INTO teachers (fullname, school, number_of_votes)""",
                     (name, school, 0),
                 )
+            self.connection.commit()
             except sqlite3.OperationalError:
                 continue
-        self.connection.commit()
 
     def add_user(self, username, first_name, telegram_id):
         self.cursor.execute(
