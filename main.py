@@ -2,11 +2,12 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import logging
+import random
 
 from utils import get_teachers_name, generate_list
-from database import Database
 from buttons import teachers_list, get_channels
 from states import VotingState
+from database import Database
 
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
@@ -17,6 +18,7 @@ subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
+captcha_images = [("image.jpg", "2005"), ("image2.jpg", "5566")]
 
 
 async def pagination(callback_query):
@@ -87,8 +89,10 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 @disp.callback_query_handler(lambda query: str(query.data).startswith("subscribed"))
 async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMContext):
     await VotingState.captcha.set()
+    generated_captcha = random.choice(captcha_images)
     await bot.send_message(
-        text="Captchadan uting: manu nichchi 2255?", chat_id=callback_query.from_user.id
+        text=f"Captchadan uting: manu nichchi {generated_captcha[0]}?",
+        chat_id=callback_query.from_user.id,
     )
 
 
@@ -110,7 +114,7 @@ async def subscribtion_handler(callback_query: types.CallbackQuery, state: FSMCo
 #     # await state.update_data(channel_name=callback_query.data.split(":")[1])
 
 
-@d.message_handler(state=VotingState.captcha)
+@disp.message_handler(state=VotingState.captcha)
 async def captcha_handler(message: types.Message, state: FSMContext):
     # Assuming the correct captcha answer is "2255"
     correct_answer = "2255"
