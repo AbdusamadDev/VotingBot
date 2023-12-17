@@ -1,12 +1,14 @@
 from aiogram import Bot, executor, Dispatcher, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import logging
 
 from utils import get_teachers_name, generate_list
 from buttons import teachers_list
 
 logging.basicConfig(level=logging.INFO)
+storage = MemoryStorage()
 bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
-disp = Dispatcher(bot)
+disp = Dispatcher(bot, storage=storage)
 start_page = 0
 end_page = 8
 names_list = generate_list(names=get_teachers_name())
@@ -64,7 +66,7 @@ async def back_handler(callback_query: types.CallbackQuery):
 async def choice(callback_query: types.CallbackQuery):
     choice = callback_query.data.split(":")
     await bot.send_message(
-        chat_id=callback_query.from_user.id, text=f"Your choice: {callback_query.dat}"
+        chat_id=callback_query.from_user.id, text=f"Your choice: {choice[-1]}"
     )
 
 
