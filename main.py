@@ -3,8 +3,8 @@ from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import logging
 
-from utils import get_teachers_name, generate_list
-from buttons import teachers_list
+from utils import get_teachers_name, generate_list 
+from buttons import teachers_list, get_channels
 from states import VotingState
 
 storage = MemoryStorage()
@@ -15,6 +15,7 @@ disp = Dispatcher(bot, storage=storage)
 subscribtion_click = {}
 start_page = 0
 end_page = 8
+
 
 async def pagination(callback_query):
     await bot.delete_message(
@@ -68,14 +69,17 @@ async def back_handler(callback_query: types.CallbackQuery):
 async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     choice = callback_query.data.split(":")
     await bot.send_message(
-        chat_id=callback_query.from_user.id, text=f"Ovoz berish : {choice[-1]}"
+        chat_id=callback_query.from_user.id,
+        text=f"Ovoz berish uchun quyidagi kanallarga a'zo bo'lishingiz kerak:",
+        reply_markup=get_channels()
     )
     await VotingState.choice.set()
     await state.update_data(choice=choice)
+
+@disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
+async def subscribtion
+
 CHANNEL_USERNAME = "@LAYFXAK_KANAL"
-
-
-
 
 
 if __name__ == "__main__":
