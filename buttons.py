@@ -5,7 +5,7 @@ from utils import get_teachers_name
 
 def teachers_list(page_number):
     teachers_list = [
-        InlineKeyboardButton(text=f"N{i}", callback_data=f"fuck {i}")
+        InlineKeyboardButton(text=f"N{i}", callback_data=f"School:{i}")
         for i in range((page_number * 4) - 4, page_number * 4)
     ]
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
