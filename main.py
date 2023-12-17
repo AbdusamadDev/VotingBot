@@ -3,7 +3,7 @@ from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 import logging
 
-from utils import get_teachers_name, generate_list 
+from utils import get_teachers_name, generate_list
 from buttons import teachers_list, get_channels
 from states import VotingState
 
@@ -71,13 +71,19 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await bot.send_message(
         chat_id=callback_query.from_user.id,
         text=f"Ovoz berish uchun quyidagi kanallarga a'zo bo'lishingiz kerak:",
-        reply_markup=get_channels()
+        reply_markup=get_channels(),
     )
     await VotingState.choice.set()
     await state.update_data(choice=choice)
 
+
 @disp.callback_query_handler(lambda query: str(query.data).startswith("Channel"))
-async def subscribtion
+async def subscribtion_handler(callback_query: types.CallbackQuery):
+    subscribtion_click[callback_query.from_user.id] = callback_query.data.split(":")[1]
+    await callback_query.answer("Captchadan uting: manu nichchi 2255?")
+    await VotingState.captcha.set()
+    
+    
 
 CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
