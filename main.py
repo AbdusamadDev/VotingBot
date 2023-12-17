@@ -74,17 +74,20 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     await state.update_data(choice=choice)
 
 
-@disp.message_handler(commands=["mysubscriptions"])
-async def my_subscriptions(message: types.Message, state: FSMContext):
-    async with state.proxy() as data:
-        subscribed_channels = data.get("subscribed_channels", [])
+@disp.message_handler(commands=['getmember'])
+async def get_member_info(message: types.Message):
+    chat_id = message.chat.id
+    user_id = message.from_user.id
 
-    if subscribed_channels:
-        await message.answer(
-            "Your subscribed channels:\n" + "\n".join(subscribed_channels)
-        )
-    else:
-        await message.answer("You have not subscribed to any channels yet.")
+    try:
+        member = await bot.get_chat_member(chat_id, user_id)
+        member_status = member.status
+        member_user = member.user
+        print(f"User ID: {user_id}, Status: {member_status}, User: {member_user}")
+        await message.reply(f"Your membership status in this chat: {member_status}")
+    except Exception as e:
+        print(f"Error getting chat member: {e}")
+        await message.reply("Unable to get your membership status.")
 
 
 if __name__ == "__main__":
