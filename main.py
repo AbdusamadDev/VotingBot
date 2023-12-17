@@ -7,14 +7,14 @@ from utils import get_teachers_name, generate_list
 from buttons import teachers_list
 from states import VotingState
 
-logging.basicConfig(level=logging.INFO)
 storage = MemoryStorage()
+logging.basicConfig(level=logging.INFO)
 bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
+names_list = generate_list(names=get_teachers_name())
 disp = Dispatcher(bot, storage=storage)
+subscribtion_click = {}
 start_page = 0
 end_page = 8
-names_list = generate_list(names=get_teachers_name())
-
 
 async def pagination(callback_query):
     await bot.delete_message(
@@ -72,29 +72,32 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     )
     await VotingState.choice.set()
     await state.update_data(choice=choice)
-
+CHANNEL_USERNAME = "@LAYFXAK_KANAL"
 
 async def check_subscription(user_id):
-    chat_member = await bot.get_chat_member(chat_id="@LAYFXAK_KANAL", user_id=user_id)
+    try:
+        # Get chat member info
+        chat_member = await bot.get_chat_member(chat_id=CHANNEL_USERNAME, user_id=user_id)
 
-    # Check if the user is a member of the channel
-    print("Status: ", chat_member)
-    if chat_member.status in ["member", "administrator", "creator"]:
-        return True
-    else:
+        # Check if the user is a member of the channel
+        if chat_member.status in [types.ChatMemberStatus.MEMBER, types.ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR]:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        logging.error(f"Error checking subscription: {e}")
         return False
 
-
-@disp.message_handler(commands=["get"])
+@disp.message_handler(commands=['get'])
 async def start(message: types.Message):
     user_id = message.from_user.id
 
     if await check_subscription(user_id):
         await message.reply("You are subscribed to the channel!")
     else:
-        await message.reply(
-            "To access this bot, you need to subscribe to the channel first."
-        )
+        await message.reply("To access this bot, you need to subscribe to the channel first.")
+
 
 
 if __name__ == "__main__":
