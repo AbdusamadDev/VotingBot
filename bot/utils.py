@@ -1,5 +1,7 @@
 import os
 import json
+import calendar
+from datetime import datetime
 
 
 def get_credentials():
@@ -53,5 +55,9 @@ def generate_list(names):
     return [f"{key}. {value}.\n\n" for key, value in names.items()]
 
 
+month_names = [calendar.month_name[month_idx] for month_idx in range(1, 13)]
+
+
 if __name__ == "__main__":
-    print(get_credentials())
+    print(len(month_names))
+    print(datetime.now().month)

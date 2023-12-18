@@ -17,3 +17,9 @@ class ChannelState(StatesGroup):
 class AdvertiseState(StatesGroup):
     target_user = State()
     advertise = State()
+
+
+class TimePeriodState(StatesGroup):
+    start_month = State()
+    end_month = State()
+    

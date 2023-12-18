@@ -1,5 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from utils import month_names
+
 
 def teachers_list(start_page, end_page, labels):
     part_1 = (start_page, start_page + 4)
@@ -95,5 +97,29 @@ def admin_options():
             [advertise_button],
             [set_activity_time_button],
         ]
+    )
+    return markup
+
+
+def start_months_buttons():
+    buttons = [
+        InlineKeyboardButton(text=name, callback_data=f"start_month:{name}")
+        for name in month_names
+    ]
+    print(buttons)
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[[*buttons[0:5]], [*buttons[5:9]], [*buttons[9:12]]]
+    )
+    return markup
+
+
+def end_months_buttons():
+    buttons = [
+        InlineKeyboardButton(text=name, callback_data=f"end_month:{name}")
+        for name in month_names
+    ]
+    print(buttons)
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[[*buttons[0:5]], [*buttons[5:9]], [*buttons[9:12]]]
     )
     return markup

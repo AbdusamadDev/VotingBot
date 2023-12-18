@@ -1,12 +1,20 @@
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot, executor, Dispatcher, types
 from aiogram.dispatcher import FSMContext
+from datetime import datetime
+import calendar
 import logging
 import random
 
-from states import VotingState, ChannelState, AdvertiseState
 from database import Database
+from states import (
+    AdvertiseState,
+    ChannelState,
+    VotingState,
+)
 from buttons import (
+    start_months_buttons,
+    end_months_buttons,
     teachers_list,
     admin_options,
     users_list,
@@ -16,9 +24,10 @@ from utils import (
     get_credentials,
     captcha_images,
     generate_list,
+    month_names,
 )
 
-
+# 6746703582:AAFQFi1OEHizS6n3Gg7hI_Mt9IBFl43fTNc
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
@@ -62,28 +71,39 @@ async def pagination(callback_query):
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
+    time_period = database.get_period()
+    start_month_num = list(calendar.month_name).index(time_period[0].capitalize())
+    end_month_num = list(calendar.month_name).index(time_period[1].capitalize())
+
     if ADMIN_ID != message.from_user.id:
-        if database.is_already_voted(message.from_user.id):
-            await message.answer("Siz allaqachon ovoz berib bolgansiz!")
+        current_month = datetime.now().month
+        if start_month_num <= current_month <= end_month_num or (
+            start_month_num > end_month_num
+            and (current_month >= start_month_num or current_month <= end_month_num)
+        ):
+            if database.is_already_voted(message.from_user.id):
+                await message.answer("Siz allaqachon ovoz berib bolgansiz!")
+            else:
+                global start_page, end_page, users_start_page, users_end_page
+                start_page, end_page = 0, 8
+                users_start_page, users_end_page = 0, 8
+                constructed_names = "".join(names_list[:end_page])
+                await message.answer(
+                    f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+                    + constructed_names,
+                    reply_markup=teachers_list(
+                        start_page=start_page,
+                        end_page=end_page,
+                        labels=list(get_teachers_name().keys()),
+                    ),
+                )
+                database.add_user(
+                    telegram_id=message.from_user.id,
+                    first_name=message.from_user.first_name,
+                    username=message.from_user.username,
+                )
         else:
-            global start_page, end_page, users_start_page, users_end_page
-            start_page, end_page = 0, 8
-            users_start_page, users_end_page = 0, 8
-            constructed_names = "".join(names_list[:end_page])
-            await message.answer(
-                f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-                + constructed_names,
-                reply_markup=teachers_list(
-                    start_page=start_page,
-                    end_page=end_page,
-                    labels=list(get_teachers_name().keys()),
-                ),
-            )
-            database.add_user(
-                telegram_id=message.from_user.id,
-                first_name=message.from_user.first_name,
-                username=message.from_user.username,
-            )
+            await message.answer("Hozir ovoz berish payti emas")
     else:
         await message.answer(
             "Assalomu alaykum admin!\nQuyidagilardan birini tanlang.",
@@ -232,7 +252,10 @@ async def proceed_advertise_user_handler(
     await state.update_data(target_user=int(chat_id))
     await AdvertiseState.advertise.set()
 
-@disp.message_handler(content_types=types.ContentType.ANY, state=AdvertiseState.advertise)
+
+@disp.message_handler(
+    content_types=types.ContentType.ANY, state=AdvertiseState.advertise
+)
 async def copy_advertise_and_send(message: types.Message, state: FSMContext):
     await message.answer(
         "Tashakkur, reklamangiz jo'natildi!", reply_markup=admin_options()
@@ -249,7 +272,6 @@ async def copy_advertise_and_send(message: types.Message, state: FSMContext):
     await state.finish()
 
 
-
 @disp.callback_query_handler(lambda query: query.data == "view_teachers")
 async def view_teachers(callback_query: types.CallbackQuery):
     await bot.send_message(
@@ -264,5 +286,36 @@ async def view_teachers(callback_query: types.CallbackQuery):
     )
 
 
+@disp.callback_query_handler(lambda query: query.data == "set_activity")
+async def set_activity_handler(callback_query: types.CallbackQuery):
+    await bot.send_message(
+        chat_id=callback_query.from_user.id,
+        text="Ovoz berish muddatini kiriting, Boshlanish",
+        reply_markup=start_months_buttons(),
+    )
+
+
+@disp.callback_query_handler(lambda query: query.data.startswith("start_month"))
+async def set_start_month_handler(callback_query: types.CallbackQuery):
+    await bot.send_message(
+        chat_id=callback_query.from_user.id,
+        text="Ovoz berish muddatini kiriting, Tugash",
+        reply_markup=end_months_buttons(),
+    )
+    database.update_period(start_month=callback_query.data.split(":")[-1])
+
+
+@disp.callback_query_handler(lambda query: query.data.startswith("end_month"))
+async def set_end_month_handler(callback_query: types.CallbackQuery):
+    await bot.send_message(
+        text="Updated",
+        chat_id=callback_query.from_user.id,
+        reply_markup=admin_options(),
+    )
+    database.update_period(end_month=callback_query.data.split(":")[-1])
+
+
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)
+
+# https://t.me/oKDeveloper

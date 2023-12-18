@@ -10,6 +10,7 @@ class Database:
         self.create_users_table()
         self.create_teachers_table()
         self.create_channels_table()
+        self.create_period_table()
 
     def create_channels_table(self):
         self.cursor.execute(
@@ -20,14 +21,32 @@ class Database:
         )
         self.connection.commit()
 
+    def create_period_table(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS period 
+            (id INTEGER, start_month TEXT, end_month 
+            TEXT, PRIMARY KEY ('id'))
+            """
+        )
+        self.cursor.execute(
+            """
+            INSERT INTO period (start_month, end_month)
+            VALUES ('Dekabr', 'Fevral')
+            """
+        )
+        self.connection.commit()
+
     def create_users_table(self):
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS users 
-            (id INTEGER, username TEXT, first_name TEXT, telegram_id INTEGER UNIQUE,
+            (id INTEGER, username TEXT, first_name TEXT, 
+            telegram_id INTEGER UNIQUE,
             is_voted INTEGER, PRIMARY KEY ('id'))
             """
         )
+
         self.connection.commit()
 
     def create_teachers_table(self):
@@ -117,10 +136,21 @@ class Database:
             for school, fullname, number_of_votes in teachers.fetchall()
         }
 
+    def update_period(self, **kwargs):
+        print(list(kwargs.items())[-1])
+        self.cursor.execute(
+            f"""UPDATE period SET {list(kwargs.items())[0][0]}=? WHERE id = 1""",
+            (list(kwargs.items())[-1][-1],),
+        )
+        self.connection.commit()
+
+    def get_period(self):
+        period = self.cursor.execute(
+            """SELECT start_month, end_month FROM period WHERE id=1"""
+        )
+        return period.fetchone()
+
 
 if __name__ == "__main__":
     database = Database()
-    for i in range(20):
-        database.add_user(
-            "User " + str(i), first_name="Firstname " + str(i), telegram_id=i
-        )
+    database.update_period(start_month="December")

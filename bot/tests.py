@@ -1,4 +1,3 @@
-# import os
+from datetime import datetime
 
-
-# print(captcha_images)
+print(datetime(2023, 12, 18))
