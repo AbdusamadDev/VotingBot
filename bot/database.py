@@ -1,6 +1,6 @@
 import sqlite3
 
-from utils import get_teachers_name
+from utils import get_teachers_name, generate_list
 
 
 class Database:
@@ -9,6 +9,16 @@ class Database:
         self.cursor = self.connection.cursor()
         self.create_users_table()
         self.create_teachers_table()
+        self.create_channels_table()
+
+    def create_channels_table(self):
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS channels 
+            (id INTEGER, name TEXT, PRIMARY KEY ('id'))
+            """
+        )
+        self.connection.commit()
 
     def create_users_table(self):
         self.cursor.execute(
@@ -85,10 +95,17 @@ class Database:
     def get_usernames(self):
         users = self.cursor.execute("""SELECT username FROM users;""")
         return (
-            [(user[0], index) for index, user in enumerate(users, start=1)]
+            [(index, user[0]) for index, user in enumerate(users, start=1)]
             if users
             else []
         )
+
+    def add_channel(self, name):
+        self.cursor.execute(
+            """INSERT INTO channels (name) VALUES (?)""",
+            (name,),
+        )
+        self.connection.commit()
 
 
 if __name__ == "__main__":
@@ -97,4 +114,4 @@ if __name__ == "__main__":
         database.add_user(
             "User " + str(i), first_name="Firstname " + str(i), telegram_id=i
         )
-    print(database.get_usernames())
+

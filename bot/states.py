@@ -8,3 +8,7 @@ class VotingState(StatesGroup):
     username = State()
     captcha = State()
     choice = State()
+
+
+class ChannelState(StatesGroup):
+    channel_name = State()
