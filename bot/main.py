@@ -4,10 +4,16 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
-from utils import get_teachers_name, generate_list, captcha_images
-from buttons import teachers_list, get_channels
+from buttons import teachers_list
 from states import VotingState
 from database import Database
+from utils import (
+    get_teachers_name,
+    get_credentials,
+    captcha_images,
+    generate_list,
+)
+
 
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
@@ -18,6 +24,7 @@ subscribtion_click = {}
 database = Database()
 start_page = 0
 end_page = 8
+ADMIN_ID = get_credentials().get("admin_id", None)
 
 
 async def pagination(callback_query):
@@ -38,26 +45,29 @@ async def pagination(callback_query):
 
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    if database.is_already_voted(message.from_user.id):
-        await message.answer("Siz allaqachon ovoz berib bolgansiz!")
+    if ADMIN_ID + 5 != message.from_user.id:
+        if database.is_already_voted(message.from_user.id):
+            await message.answer("Siz allaqachon ovoz berib bolgansiz!")
+        else:
+            global start_page, end_page
+            start_page, end_page = 0, 8
+            constructed_names = "".join(names_list[:end_page])
+            await message.answer(
+                f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+                + constructed_names,
+                reply_markup=teachers_list(
+                    start_page=start_page,
+                    end_page=end_page,
+                    labels=list(get_teachers_name().keys()),
+                ),
+            )
+            database.add_user(
+                telegram_id=message.from_user.id,
+                first_name=message.from_user.first_name,
+                username=message.from_user.username,
+            )
     else:
-        global start_page, end_page
-        start_page, end_page = 0, 8
-        constructed_names = "".join(names_list[:end_page])
-        await message.answer(
-            f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
-            + constructed_names,
-            reply_markup=teachers_list(
-                start_page=start_page,
-                end_page=end_page,
-                labels=list(get_teachers_name().keys()),
-            ),
-        )
-        database.add_user(
-            telegram_id=message.from_user.id,
-            first_name=message.from_user.first_name,
-            username=message.from_user.username,
-        )
+        await message.answer("Wassup Admin, fuckin admin")
 
 
 @disp.callback_query_handler(lambda query: query.data == "next")
@@ -83,16 +93,17 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
             "Siz allaqachon ovoz berib bolgansiz!", chat_id=callback_query.from_user.id
         )
     else:
-        choice_data = callback_query.data.split(":")[1]
+        choice_data = callback_query.data.split(":")[-1]
+        print("Mana osha ko't: ", callback_query.data)
         generated_captcha = random.choice(captcha_images)
         await VotingState.choice.set()
         await state.update_data(choice=choice_data, captcha=generated_captcha)
         await bot.send_photo(
-            chat_id=callback_query.from_user.id, photo=generated_captcha[0]
+            chat_id=callback_query.from_user.id, photo=open(generated_captcha[0], "rb")
         )
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f"Quyidagi rasmda nechi raqam berilgan: {generated_captcha[0]}?",
+            text=f"Quyidagi rasmda nechi raqam berilgan?",
         )
 
 
@@ -102,6 +113,7 @@ async def process_choice(message: types.Message, state: FSMContext):
     if message.text == data.get("captcha")[1]:
         data = await state.get_data()
         choice_data = data.get("choice")
+        print("Choice Data: ", choice_data)
         await bot.send_message(
             message.chat.id,
             f"Ovoz berganingiz uchun tashakkur!",

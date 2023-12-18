@@ -54,11 +54,12 @@ class Database:
             """UPDATE users SET is_voted = 1 WHERE telegram_id = ?;""",
             (telegram_id,),
         )
+        print(school)
         number_of_votes = self.cursor.execute(
             """SELECT number_of_votes FROM teachers WHERE school LIKE ?""",
             (school,),
         )
-        if number_of_votes and number_of_votes is not None:
+        if number_of_votes or number_of_votes is not None:
             number_of_votes = number_of_votes.fetchone()[0]
         self.cursor.execute(
             """UPDATE teachers SET number_of_votes = ? WHERE school LIKE ?""",
