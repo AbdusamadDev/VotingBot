@@ -94,7 +94,6 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
         )
     else:
         choice_data = callback_query.data.split(":")[-1]
-        print("Mana osha ko't: ", callback_query.data)
         generated_captcha = random.choice(captcha_images)
         await VotingState.choice.set()
         await state.update_data(choice=choice_data, captcha=generated_captcha)
@@ -113,12 +112,10 @@ async def process_choice(message: types.Message, state: FSMContext):
     if message.text == data.get("captcha")[1]:
         data = await state.get_data()
         choice_data = data.get("choice")
-        print("Choice Data: ", choice_data)
         await bot.send_message(
             message.chat.id,
             f"Ovoz berganingiz uchun tashakkur!",
         )
-        print(choice_data)
         database.voting(message.from_user.id, choice_data)
         await state.finish()
     else:
