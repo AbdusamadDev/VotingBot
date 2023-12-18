@@ -4,9 +4,13 @@ from aiogram.dispatcher import FSMContext
 import logging
 import random
 
-from buttons import teachers_list, admin_options, users_list
-from states import VotingState, ChannelState
+from states import VotingState, ChannelState, AdvertiseState
 from database import Database
+from buttons import (
+    teachers_list,
+    admin_options,
+    users_list,
+)
 from utils import (
     get_teachers_name,
     get_credentials,
@@ -25,6 +29,8 @@ database = Database()
 users_names_list = generate_list(
     names={key: value for key, value in database.get_usernames()}
 )
+view_start_page = 0
+view_end_page = 8
 users_start_page = 0
 users_end_page = 8
 start_page = 0
@@ -190,7 +196,7 @@ async def advertise_handler(callback_query: types.CallbackQuery):
         reply_markup=users_list(
             start_page=users_start_page,
             end_page=users_end_page,
-            labels=list(range(users_start_page, users_end_page)),
+            labels=list(range(users_start_page + 1, users_end_page + 1)),
         ),
     )
 
@@ -210,9 +216,53 @@ async def users_back_handler(callback_query: types.CallbackQuery):
     users_start_page = users_end_page - 8
     await users_pagination(callback_query)
 
+
 @disp.callback_query_handler(lambda query: query.data.startswith("advertise_user"))
-async def proceed_advertise_user_handler(callback_query: types.CallbakcQuery):
-    pass
+async def proceed_advertise_user_handler(
+    callback_query: types.CallbackQuery, state: FSMContext
+):
+    await bot.send_message(
+        text="Reklamangizni kiritishingiz mumkin!",
+        chat_id=callback_query.from_user.id,
+    )
+    choice = callback_query.data.split(":")[-1]
+    user = database.get_usernames()[int(choice) - 1][1]
+    chat_id = database.get_user_id(user)
+    await AdvertiseState.target_user.set()
+    await state.update_data(target_user=int(chat_id))
+    await AdvertiseState.advertise.set()
+
+@disp.message_handler(content_types=types.ContentType.ANY, state=AdvertiseState.advertise)
+async def copy_advertise_and_send(message: types.Message, state: FSMContext):
+    await message.answer(
+        "Tashakkur, reklamangiz jo'natildi!", reply_markup=admin_options()
+    )
+    await state.update_data(advertise=message.text)
+    data = await state.get_data()
+    advertise = data.get("advertise")
+    await bot.copy_message(
+        chat_id=data.get("target_user"),
+        from_chat_id=message.chat.id,
+        message_id=message.message_id,
+        caption=advertise,
+    )
+    await state.finish()
+
+
+
+@disp.callback_query_handler(lambda query: query.data == "view_teachers")
+async def view_teachers(callback_query: types.CallbackQuery):
+    await bot.send_message(
+        text="".join(
+            [
+                f"{label} -- {votes} ta ovoz\n\n"
+                for label, votes in database.get_teachers_by_order().items()
+            ]
+        ),
+        chat_id=callback_query.from_user.id,
+        reply_markup=admin_options(),
+    )
+
 
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)

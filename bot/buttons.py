@@ -76,6 +76,9 @@ def users_list(start_page, end_page, labels):
 
 
 def admin_options():
+    view_teachers_button = InlineKeyboardButton(
+        text="O'qituvchilarni ko'rish", callback_data="view_teachers"
+    )
     channel_add_button = InlineKeyboardButton(
         text="Kanal qo'shish", callback_data="add_channel"
     )
@@ -87,6 +90,7 @@ def admin_options():
     )
     markup = InlineKeyboardMarkup(
         inline_keyboard=[
+            [view_teachers_button],
             [channel_add_button],
             [advertise_button],
             [set_activity_time_button],

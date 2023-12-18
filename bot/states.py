@@ -12,3 +12,8 @@ class VotingState(StatesGroup):
 
 class ChannelState(StatesGroup):
     channel_name = State()
+
+
+class AdvertiseState(StatesGroup):
+    target_user = State()
+    advertise = State()

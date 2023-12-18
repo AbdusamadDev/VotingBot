@@ -107,6 +107,15 @@ class Database:
         )
         self.connection.commit()
 
+    def get_teachers_by_order(self):
+        teachers = self.cursor.execute(
+            """SELECT school, fullname, number_of_votes FROM teachers"""
+        )
+        return {
+            f"{school} {fullname}": number_of_votes
+            for school, fullname, number_of_votes in teachers
+        }
+
 
 if __name__ == "__main__":
     database = Database()
@@ -114,4 +123,3 @@ if __name__ == "__main__":
         database.add_user(
             "User " + str(i), first_name="Firstname " + str(i), telegram_id=i
         )
-
