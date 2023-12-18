@@ -1,5 +1,6 @@
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import Bot, executor, Dispatcher, types
+from aiogram.utils.exceptions import BadRequest
 from aiogram.dispatcher import FSMContext
 from datetime import datetime
 import calendar
@@ -13,6 +14,7 @@ from states import (
     VotingState,
 )
 from buttons import (
+    get_channels_buttons,
     start_months_buttons,
     end_months_buttons,
     teachers_list,
@@ -24,7 +26,6 @@ from utils import (
     get_credentials,
     captcha_images,
     generate_list,
-    month_names,
 )
 
 # 6746703582:AAFQFi1OEHizS6n3Gg7hI_Mt9IBFl43fTNc
@@ -69,13 +70,58 @@ async def pagination(callback_query):
     )
 
 
+@disp.callback_query_handler(lambda query: query.data.startswith("subscribed"))
+async def subscribtion_check_handler(callback_query: types.CallbackQuery):
+    print("WASSSUP")
+    # unsubscribed_channels_two = []
+    # channels = database.get_channels()
+    # for channel_username in channels:
+    #     try:
+    #         chat_member = await bot.get_chat_member(
+    #             chat_id=channel_username, user_id=callback_query.from_user.id
+    #         )
+    #         if chat_member.status != "member":
+    #             unsubscribed_channels_two.append(channel_username)
+    #     except BadRequest:
+    #         await bot.send_message(
+    #             chat_id=ADMIN_ID,
+    #             text=f"Iltimos {channel_username} kanaliga botni admin qilib quying!",
+    #         )
+    # print(unsubscribed_channels_two)
+    # if len(unsubscribed_channels_two) != 0:
+    #     await bot.send_message(
+    #         chat_id=callback_query.from_user.id,
+    #         text="Please subscribe to these channels first:",
+    #         reply_markup=get_channels_buttons(channels),
+    #     )
+    # else:
+    #     await bot.send_message(
+    #         chat_id=callback_query.from_user.id, text="You are freaking liar!!!!"
+    #     )
+    #     # generated_captcha = random.choice(captcha_images)
+    #     # await bot.send_photo(
+    #     #     chat_id=callback_query.from_user.id,
+    #     #     photo=open(generated_captcha[0], "rb"),
+    #     # )
+    #     # await state.update_data(captcha=generated_captcha)
+    await bot.send_message(
+        chat_id=callback_query.from_user.id,
+        text=f"Quyidagi rasmda nechi raqam berilgan?",
+    )
+
+
+@disp.callback_query_handler(lambda query: query.data == "asd")
+async def example(callback_query: types.CallbackQuery):
+    await bot.send_message(chat_id=callback_query.from_user.id, text="asdasdasasdas")
+
+
 @disp.message_handler(commands=["start"])
 async def start(message: types.Message):
     time_period = database.get_period()
     start_month_num = list(calendar.month_name).index(time_period[0].capitalize())
     end_month_num = list(calendar.month_name).index(time_period[1].capitalize())
 
-    if ADMIN_ID != message.from_user.id:
+    if ADMIN_ID + 5 != message.from_user.id:
         current_month = datetime.now().month
         if start_month_num <= current_month <= end_month_num or (
             start_month_num > end_month_num
@@ -134,35 +180,64 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
             "Siz allaqachon ovoz berib bolgansiz!", chat_id=callback_query.from_user.id
         )
     else:
+        print("Is not voted yet, just preparing")
         choice_data = callback_query.data.split(":")[-1]
-        generated_captcha = random.choice(captcha_images)
         await VotingState.choice.set()
-        await state.update_data(choice=choice_data, captcha=generated_captcha)
-        await bot.send_photo(
-            chat_id=callback_query.from_user.id, photo=open(generated_captcha[0], "rb")
-        )
-        await bot.send_message(
-            chat_id=callback_query.from_user.id,
-            text=f"Quyidagi rasmda nechi raqam berilgan?",
-        )
+        await state.update_data(choice=choice_data)
+        unsubscribed_channels = []
+        channels = database.get_channels()
+        for channel_username in channels:
+            print("Loop being executed")
+            try:
+                chat_member = await bot.get_chat_member(
+                    chat_id=channel_username, user_id=callback_query.from_user.id
+                )
+                if chat_member.status != "member":
+                    print("Unsubscribed channel found!")
+                    unsubscribed_channels.append(channel_username)
+            except BadRequest:
+                await bot.send_message(
+                    chat_id=ADMIN_ID,
+                    text=f"Iltimos {channel_username} kanaliga botni admin qilib quying!",
+                )
+        if len(unsubscribed_channels) != 0:
+            await bot.send_message(
+                chat_id=callback_query.from_user.id,
+                text="Please subscribe to these channels sdfsdfsdffirst:",
+                reply_markup=get_channels_buttons(channels),
+            )
+        else:
+            generated_captcha = random.choice(captcha_images)
+            await bot.send_photo(
+                chat_id=callback_query.from_user.id,
+                photo=open(generated_captcha[0], "rb"),
+            )
+            await state.update_data(captcha=generated_captcha)
+            await bot.send_message(
+                chat_id=callback_query.from_user.id,
+                text=f"Quyidagi rasmda nechi raqam berilgan?",
+            )
 
 
 @disp.message_handler(state=VotingState.choice)
 async def process_choice(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    if message.text == data.get("captcha")[1]:
-        data = await state.get_data()
-        choice_data = data.get("choice")
-        await bot.send_message(
-            message.chat.id,
-            f"Ovoz berganingiz uchun tashakkur!",
-        )
-        database.voting(message.from_user.id, choice_data)
-        await state.finish()
-    else:
-        await bot.send_message(
-            message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
-        )
+    try:
+        if message.text == data.get("captcha")[1]:
+            data = await state.get_data()
+            choice_data = data.get("choice")
+            await bot.send_message(
+                message.chat.id,
+                f"Ovoz berganingiz uchun tashakkur!",
+            )
+            database.voting(message.from_user.id, choice_data)
+            await state.finish()
+        else:
+            await bot.send_message(
+                message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
+            )
+    except:
+        await message.answer("Botni /start orqali qayta ishga tushiring")
 
 
 # ====================================================================================

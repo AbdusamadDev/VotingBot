@@ -150,6 +150,13 @@ class Database:
         )
         return period.fetchone()
 
+    def get_channels(self):
+        channels = self.cursor.execute("""SELECT name FROM channels""")
+        if channels:
+            return [name[0] for name in channels.fetchall()]
+        else:
+            return []
+
 
 if __name__ == "__main__":
     database = Database()

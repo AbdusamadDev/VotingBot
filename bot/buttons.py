@@ -123,3 +123,18 @@ def end_months_buttons():
         inline_keyboard=[[*buttons[0:5]], [*buttons[5:9]], [*buttons[9:12]]]
     )
     return markup
+
+
+def get_channels_buttons(channel_names):
+    buttons = [
+        [InlineKeyboardButton(text=name.split("/")[-1], url=f"https://t.me/{name[1:]}")]
+        for name in channel_names
+    ]
+    subscribed_button = InlineKeyboardButton(
+        text="Obuna buldim", callback_data="subscribed"
+    )
+    asd = InlineKeyboardButton(text="Obuna asdasd", callback_data="asd")
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[*buttons, [subscribed_button], [asd]]
+    )
+    return markup
