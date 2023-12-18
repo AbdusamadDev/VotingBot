@@ -109,11 +109,12 @@ class Database:
 
     def get_teachers_by_order(self):
         teachers = self.cursor.execute(
-            """SELECT school, fullname, number_of_votes FROM teachers"""
+            """SELECT school, fullname, number_of_votes 
+            FROM teachers ORDER BY number_of_votes DESC"""
         )
         return {
             f"{school} {fullname}": number_of_votes
-            for school, fullname, number_of_votes in teachers
+            for school, fullname, number_of_votes in teachers.fetchall()
         }
 
 
