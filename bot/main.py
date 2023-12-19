@@ -63,7 +63,9 @@ async def start_handler(message):
             and (current_month >= start_month_num or current_month <= end_month_num)
         ):
             if database.is_already_voted(message.from_user.id):
-                await message.answer("Siz allaqachon ovoz berib bolgansiz!")
+                await message.answer(
+                    "Assalomu alaykum\nSiz allaqachon ovoz berib bo'lgansiz."
+                )
             else:
                 global start_page, end_page, users_start_page, users_end_page
                 start_page, end_page = 0, 8
@@ -88,10 +90,12 @@ async def start_handler(message):
                     username=message.from_user.username,
                 )
         else:
-            await message.answer("Hozir ovoz berish payti emas")
+            await message.answer(
+                "Assalomu alaykum, tashrifingiz uchun tashakkur, lekin ovoz berish muddati o'tib bo'lgan."
+            )
     else:
         await message.answer(
-            "Assalomu alaykum admin!\nQuyidagilardan birini tanlang.",
+            "Assalomu alaykum admin!\nMarhamat, quyidagilardan birini tanlang.",
             reply_markup=admin_options(),
         )
 
@@ -134,11 +138,10 @@ async def subscribtion_check_handler(
                 chat_id=ADMIN_ID,
                 text=f"Iltimos {channel_username} kanaliga botni admin qilib quying!",
             )
-    print(unsubscribed_channels_two)
     if len(unsubscribed_channels_two) != 0:
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text="Please subscribe to these channels first:",
+            text="Iltimos, avval quyidagi kanallarimizga obuna bo'ling:",
             reply_markup=get_channels_buttons(channels),
         )
     else:
@@ -151,13 +154,8 @@ async def subscribtion_check_handler(
         await VotingState.choice.set()
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f"Quyidagi rasmda nechi raqam berilgan?",
+            text=f"Iltimos, captchadan o'tishingizni so'raymiz. Quyidagi rasmda nima yozilgan?",
         )
-
-
-@disp.callback_query_handler(lambda query: query.data == "asd")
-async def example(callback_query: types.CallbackQuery):
-    await bot.send_message(chat_id=callback_query.from_user.id, text="asdasdasasdas")
 
 
 @disp.message_handler(commands=["start"])
@@ -185,21 +183,18 @@ async def back_handler(callback_query: types.CallbackQuery):
 async def choice(callback_query: types.CallbackQuery, state: FSMContext):
     if database.is_already_voted(callback_query.from_user.id):
         await bot.send_message(
-            "Siz allaqachon ovoz berib bolgansiz!", chat_id=callback_query.from_user.id
+            "Uzr, lekin siz allaqachon ovoz berib bo'lgansiz.",
+            chat_id=callback_query.from_user.id,
         )
     else:
-        print("Is not voted yet, just preparing")
-
         unsubscribed_channels = []
         channels = database.get_channels()
         for channel_username in channels:
-            print("Loop being executed")
             try:
                 chat_member = await bot.get_chat_member(
                     chat_id=channel_username, user_id=callback_query.from_user.id
                 )
                 if chat_member.status != "member":
-                    print("Unsubscribed channel found!")
                     unsubscribed_channels.append(channel_username)
             except BadRequest:
                 await bot.send_message(
@@ -211,7 +206,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
         if len(unsubscribed_channels) != 0:
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text="Please subscribe to these channels sdfsdfsdffirst:",
+                text="Iltimos, avval quyidagi kanallarimizga obuna bo'ling:",
                 reply_markup=get_channels_buttons(channels),
             )
         else:
@@ -223,7 +218,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
             await state.update_data(captcha=generated_captcha)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f"Quyidagi rasmda nechi raqam berilgasdfafasdfasfasdfn?",
+                text=f"Iltimos, captchadan o'tishingizni so'raymiz. Quyidagi rasmda nima yozilgan?",
             )
             await VotingState.choice.set()
 
@@ -231,24 +226,24 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
 @disp.message_handler(state=VotingState.choice)
 async def process_choice(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    # try:
-    if message.text == data.get("captcha")[1]:
-        data = await state.get_data()
-        choice_data = data.get("choice")
-        await bot.send_message(
-            message.chat.id,
-            f"Ovoz berganingiz uchun tashakkur!",
-        )
-        database.voting(message.from_user.id, choice_data)
-        await state.finish()
-    else:
-        await bot.send_message(
-            message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
-        )
-    # except Exception as error:
-    #     print(data)
-    #     print(error)
-    #     await message.answer("Botni /start orqali qayta ishga tushiring")
+    try:
+        if message.text == data.get("captcha")[1]:
+            data = await state.get_data()
+            choice_data = data.get("choice")
+            await bot.send_message(
+                message.chat.id,
+                f"Tashakkur ovoz qabul qilindi, siznig ovozingiz biz uchun qadrli!",
+            )
+            database.voting(message.from_user.id, choice_data)
+            await state.finish()
+        else:
+            await bot.send_message(
+                message.chat.id, "Captcha noto'g'ri, qayta urinib ko'ring"
+            )
+    except Exception as error:
+        print(data)
+        print(error)
+        await message.answer("Botni /start orqali qayta ishga tushiring")
 
 
 # ====================================================================================
@@ -265,8 +260,7 @@ async def users_pagination(callback_query):
     )
     await bot.send_message(
         callback_query.from_user.id,
-        text="Iltimos reklamani yuborish uchun bir necha yoki bitta "
-        "foydalanuvchini tanlashingiz mumkin\n\n"
+        text="Iltimos reklamani yuborish uchun foydalanuvchini tanlang\n\n"
         + "".join(users_names_list[users_start_page:users_end_page]),
         reply_markup=users_list(
             start_page=users_start_page,
@@ -281,7 +275,7 @@ async def add_channel_handler(callback_query: types.CallbackQuery):
     await ChannelState.channel_name.set()
     await bot.send_message(
         callback_query.from_user.id,
-        "Kanal nomini kiriting.\nEslatma, kanal nomini to'g'ri kiriting, "
+        "Kanal nomini kiriting.\n⚠ Eslatma, kanal nomini to'g'ri kiriting, "
         "foydalanuvchilar shu nom orqali kanalga qo'shilishadi",
     )
 
@@ -291,7 +285,10 @@ async def channel_name_handler(message: types.Message, state: FSMContext):
     await state.update_data(channel_name=message.text)
     data = await state.get_data()
     name = data.get("channel_name")
-    await message.answer("Kanal qo'shildi!", reply_markup=admin_options())
+    await message.answer(
+        "Kanal muvaffaqiyatli qo'shildi, botni kanalga adminligiga yana bir bor ishonch hosil qiling!",
+        reply_markup=admin_options(),
+    )
     database.add_channel(name="@" + name)
 
 
@@ -333,7 +330,7 @@ async def proceed_advertise_user_handler(
     callback_query: types.CallbackQuery, state: FSMContext
 ):
     await bot.send_message(
-        text="Reklamangizni kiritishingiz mumkin!",
+        text="Marhamat, istalgan formatdagi reklamani kiritishingiz mumkin!",
         chat_id=callback_query.from_user.id,
     )
     choice = callback_query.data.split(":")[-1]
@@ -349,7 +346,7 @@ async def proceed_advertise_user_handler(
 )
 async def copy_advertise_and_send(message: types.Message, state: FSMContext):
     await message.answer(
-        "Tashakkur, reklamangiz jo'natildi!", reply_markup=admin_options()
+        "Tashakkur, reklamangiz muvaffaqiyatli jo'natildi!", reply_markup=admin_options()
     )
     await state.update_data(advertise=message.text)
     data = await state.get_data()
@@ -381,7 +378,7 @@ async def view_teachers(callback_query: types.CallbackQuery):
 async def set_activity_handler(callback_query: types.CallbackQuery):
     await bot.send_message(
         chat_id=callback_query.from_user.id,
-        text="Ovoz berish muddatini kiriting, Boshlanish",
+        text="Ovoz berish vaqtining boshlanish muddatini tanlang:",
         reply_markup=start_months_buttons(),
     )
 
@@ -390,7 +387,7 @@ async def set_activity_handler(callback_query: types.CallbackQuery):
 async def set_start_month_handler(callback_query: types.CallbackQuery):
     await bot.send_message(
         chat_id=callback_query.from_user.id,
-        text="Ovoz berish muddatini kiriting, Tugash",
+        text="Ovoz berish vaqtining tugash muddatini tanlang:",
         reply_markup=end_months_buttons(),
     )
     database.update_period(start_month=callback_query.data.split(":")[-1])
@@ -399,7 +396,7 @@ async def set_start_month_handler(callback_query: types.CallbackQuery):
 @disp.callback_query_handler(lambda query: query.data.startswith("end_month"))
 async def set_end_month_handler(callback_query: types.CallbackQuery):
     await bot.send_message(
-        text="Updated",
+        text="Tashakkur, botni ishlash muddatini muvaffaqiyatli o'rnatildi!",
         chat_id=callback_query.from_user.id,
         reply_markup=admin_options(),
     )

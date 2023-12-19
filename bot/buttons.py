@@ -20,7 +20,6 @@ def teachers_list(start_page, end_page, labels):
                 break
         return result
 
-    print(start_page, end_page)
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
     directions = []
@@ -43,8 +42,6 @@ def users_list(start_page, end_page, labels):
     part_2 = (start_page + 4, end_page)
 
     def create_users_list(limit):
-        print("Labels is being: ", labels)
-        print("Limit is being: ", limit)
         result = []
         for i in range(*limit):
             try:
@@ -57,7 +54,6 @@ def users_list(start_page, end_page, labels):
                 break
         return result
 
-    print(start_page, end_page)
     back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="users_back")
     next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="users_next")
     directions = []
@@ -72,8 +68,6 @@ def users_list(start_page, end_page, labels):
             directions,
         ]
     )
-    print(buttons)
-    print("\n\n\n\n")
     return buttons
 
 
@@ -106,7 +100,6 @@ def start_months_buttons():
         InlineKeyboardButton(text=name, callback_data=f"start_month:{name}")
         for name in month_names
     ]
-    print(buttons)
     markup = InlineKeyboardMarkup(
         inline_keyboard=[[*buttons[0:5]], [*buttons[5:9]], [*buttons[9:12]]]
     )
@@ -118,7 +111,6 @@ def end_months_buttons():
         InlineKeyboardButton(text=name, callback_data=f"end_month:{name}")
         for name in month_names
     ]
-    print(buttons)
     markup = InlineKeyboardMarkup(
         inline_keyboard=[[*buttons[0:5]], [*buttons[5:9]], [*buttons[9:12]]]
     )
@@ -131,10 +123,7 @@ def get_channels_buttons(channel_names):
         for name in channel_names
     ]
     subscribed_button = InlineKeyboardButton(
-        text="Obuna buldim", callback_data="subscribed"
+        text="Obuna bo'ldim", callback_data="subscribed"
     )
-    asd = InlineKeyboardButton(text="Obuna asdasd", callback_data="asd")
-    markup = InlineKeyboardMarkup(
-        inline_keyboard=[*buttons, [subscribed_button], [asd]]
-    )
+    markup = InlineKeyboardMarkup(inline_keyboard=[*buttons, [subscribed_button]])
     return markup

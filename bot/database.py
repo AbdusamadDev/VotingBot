@@ -83,7 +83,6 @@ class Database:
             """UPDATE users SET is_voted = 1 WHERE telegram_id = ?;""",
             (telegram_id,),
         )
-        print(school)
         number_of_votes = self.cursor.execute(
             """SELECT number_of_votes FROM teachers WHERE school LIKE ?""",
             (school,),
@@ -137,7 +136,6 @@ class Database:
         }
 
     def update_period(self, **kwargs):
-        print(list(kwargs.items())[-1])
         self.cursor.execute(
             f"""UPDATE period SET {list(kwargs.items())[0][0]}=? WHERE id = 1""",
             (list(kwargs.items())[-1][-1],),
