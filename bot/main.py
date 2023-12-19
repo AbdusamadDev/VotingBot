@@ -28,24 +28,22 @@ from utils import (
     generate_list,
 )
 
-# 6746703582:AAFQFi1OEHizS6n3Gg7hI_Mt9IBFl43fTNc
+ADMIN_ID = get_credentials().get("admin_id", None)
+TOKEN = get_credentials().get("token", None)
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token="6473668158:AAGI-btt6VaDgOsaEiVLxQbVPVYQ0ErYfo8")
-names_list = generate_list(names=get_teachers_name())
+bot = Bot(token=TOKEN)
 disp = Dispatcher(bot, storage=storage)
 subscribtion_click = {}
 database = Database()
-users_names_list = generate_list(
-    names={key: value for key, value in database.get_usernames()}
-)
+
+
 view_start_page = 0
 view_end_page = 8
 users_start_page = 0
 users_end_page = 8
 start_page = 0
 end_page = 8
-ADMIN_ID = get_credentials().get("admin_id", None)
 
 
 # ====================================================================================
@@ -58,7 +56,7 @@ async def start_handler(message):
     start_month_num = list(calendar.month_name).index(time_period[0].capitalize())
     end_month_num = list(calendar.month_name).index(time_period[1].capitalize())
 
-    if ADMIN_ID + 5 != message.from_user.id:
+    if ADMIN_ID + 8 != message.from_user.id:
         current_month = datetime.now().month
         if start_month_num <= current_month <= end_month_num or (
             start_month_num > end_month_num
@@ -70,6 +68,10 @@ async def start_handler(message):
                 global start_page, end_page, users_start_page, users_end_page
                 start_page, end_page = 0, 8
                 users_start_page, users_end_page = 0, 8
+                names_list = [
+                    f"{key} \n{value} ta ovoz.\n\n"
+                    for key, value in database.get_teachers_by_order().items()
+                ]
                 constructed_names = "".join(names_list[:end_page])
                 await message.answer(
                     f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
@@ -98,6 +100,10 @@ async def pagination(callback_query):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
     )
+    names_list = [
+        f"{key} \n{value} ta ovoz.\n\n"
+        for key, value in database.get_teachers_by_order().items()
+    ]
     await bot.send_message(
         callback_query.from_user.id,
         "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
@@ -220,7 +226,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
                 text=f"Quyidagi rasmda nechi raqam berilgasdfafasdfasfasdfn?",
             )
             await VotingState.choice.set()
-            
+
 
 @disp.message_handler(state=VotingState.choice)
 async def process_choice(message: types.Message, state: FSMContext):
@@ -253,6 +259,9 @@ async def process_choice(message: types.Message, state: FSMContext):
 async def users_pagination(callback_query):
     await bot.delete_message(
         callback_query.from_user.id, callback_query.message.message_id
+    )
+    users_names_list = generate_list(
+        names={key: value for key, value in database.get_usernames()}
     )
     await bot.send_message(
         callback_query.from_user.id,
@@ -288,10 +297,12 @@ async def channel_name_handler(message: types.Message, state: FSMContext):
 
 @disp.callback_query_handler(lambda query: query.data == "advertise")
 async def advertise_handler(callback_query: types.CallbackQuery):
+    users_names_list = generate_list(
+        names={key: value for key, value in database.get_usernames()}
+    )
     await bot.send_message(
         chat_id=callback_query.from_user.id,
-        text="Iltimos reklamani yuborish uchun bir necha yoki bitta "
-        "foydalanuvchini tanlashingiz mumkin\n\n"
+        text="Iltimos reklamani yuborish uchun foydalanuvchini tanlang\n\n"
         + "".join(users_names_list[users_start_page:users_end_page]),
         reply_markup=users_list(
             start_page=users_start_page,
@@ -397,5 +408,3 @@ async def set_end_month_handler(callback_query: types.CallbackQuery):
 
 if __name__ == "__main__":
     executor.start_polling(disp, skip_updates=True)
-
-# https://t.me/oKDeveloper
