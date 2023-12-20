@@ -33,7 +33,7 @@ captcha_images = [
             "".join(
                 [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
             ),
-            "docs/captcha",
+            "../docs/captcha",
             filename,
         ).replace("\\", "/"),
         filename.split(".")[0],
@@ -43,7 +43,7 @@ captcha_images = [
             "".join(
                 [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
             ),
-            "docs/captcha",
+            "../docs/captcha",
         )
     )
 ]
