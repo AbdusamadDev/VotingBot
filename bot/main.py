@@ -275,7 +275,7 @@ async def add_channel_handler(callback_query: types.CallbackQuery):
     await ChannelState.channel_name.set()
     await bot.send_message(
         callback_query.from_user.id,
-        "Kanal nomini kiriting.\n  Eslatma, kanal nomini to'g'ri kiriting, "
+        "Kanal nomini kiriting.\nEslatma, kanal nomini to'g'ri kiriting, "
         "foydalanuvchilar shu nom orqali kanalga qo'shilishadi",
     )
 
