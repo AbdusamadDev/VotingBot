@@ -20,8 +20,8 @@ def teachers_list(start_page, end_page, labels):
                 break
         return result
 
-    back_button = InlineKeyboardButton(text="<< Avvalgisi", callback_data="back")
-    next_button = InlineKeyboardButton(text="Keyingisi >>", callback_data="next")
+    back_button = InlineKeyboardButton(text="⬅ Avvalgisi", callback_data="back")
+    next_button = InlineKeyboardButton(text="Keyingisi ➡", callback_data="next")
     directions = []
     if start_page != 0 and end_page != 8:
         directions.append(back_button)
