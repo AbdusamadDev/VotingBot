@@ -3,17 +3,18 @@ import json
 import calendar
 from datetime import datetime
 
+path = "/root/telegram-bot/VotingBot/"
 
 def get_credentials():
-    if not os.path.exists("../credentials.json"):
+    if not os.path.exists(path + "credentials.json"):
         return None
-    with open("../credentials.json", "rb") as creds:
+    with open(path + "credentials.json", "rb") as creds:
         credentials = json.loads(creds.read())
         return credentials
 
 
 def get_teachers_name():
-    with open("../docs/list.txt", "rb") as file:
+    with open(path + "docs/list.txt", "rb") as file:
         names = {}
         for name in file.read().decode().split("\n"):
             try:
@@ -33,7 +34,7 @@ captcha_images = [
             "".join(
                 [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
             ),
-            "../docs/captcha",
+            path + "docs/captcha",
             filename,
         ).replace("\\", "/"),
         filename.split(".")[0],
@@ -43,7 +44,7 @@ captcha_images = [
             "".join(
                 [i + "/" for i in os.path.abspath(__name__).split("\\")[:-2]],
             ),
-            "../docs/captcha",
+            path + "docs/captcha",
         )
     )
 ]

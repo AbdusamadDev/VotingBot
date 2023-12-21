@@ -76,7 +76,7 @@ async def start_handler(message):
                 ]
                 constructed_names = "".join(names_list[:end_page])
                 await message.answer(
-                    f"Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+                    f"Assalomu alaykum, botimizga xush kelibsiz\nOvoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
                     + constructed_names,
                     reply_markup=teachers_list(
                         start_page=start_page,
@@ -110,7 +110,7 @@ async def pagination(callback_query):
     ]
     await bot.send_message(
         callback_query.from_user.id,
-        "Ovoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
+        "Assalomu alaykum, botimizga xush kelibsiz\nOvoz berish uchun quyidagi o'qituvchilardan birini tanlang:\n\n"
         + "".join(names_list[start_page:end_page]),
         reply_markup=teachers_list(
             start_page=start_page,
@@ -154,7 +154,7 @@ async def subscribtion_check_handler(
         await VotingState.choice.set()
         await bot.send_message(
             chat_id=callback_query.from_user.id,
-            text=f"Iltimos, captchadan o'tishingizni so'raymiz. Quyidagi rasmda nima yozilgan?",
+            text=f"Iltimos, captchadan o'tishingizni so'raymiz. Yuqoridagi rasmda nima yozilganini kiriting?",
         )
 
 
@@ -218,7 +218,7 @@ async def choice(callback_query: types.CallbackQuery, state: FSMContext):
             await state.update_data(captcha=generated_captcha)
             await bot.send_message(
                 chat_id=callback_query.from_user.id,
-                text=f"Iltimos, captchadan o'tishingizni so'raymiz. Quyidagi rasmda nima yozilgan?",
+                text=f"Iltimos, captchadan o'tishingizni so'raymiz. Yuqoridagi rasmda nima yozilgan?",
             )
             await VotingState.choice.set()
 
@@ -232,7 +232,7 @@ async def process_choice(message: types.Message, state: FSMContext):
             choice_data = data.get("choice")
             await bot.send_message(
                 message.chat.id,
-                f"Tashakkur ovoz qabul qilindi, siznig ovozingiz biz uchun qadrli!",
+                f"Tashakkur ovozingiz qabul qilindi, siznig ovozingiz biz uchun qadrli!",
             )
             database.voting(message.from_user.id, choice_data)
             await state.finish()
@@ -275,7 +275,7 @@ async def add_channel_handler(callback_query: types.CallbackQuery):
     await ChannelState.channel_name.set()
     await bot.send_message(
         callback_query.from_user.id,
-        "Kanal nomini kiriting.\nâš  Eslatma, kanal nomini to'g'ri kiriting, "
+        "Kanal nomini kiriting.\n  Eslatma, kanal nomini to'g'ri kiriting, "
         "foydalanuvchilar shu nom orqali kanalga qo'shilishadi",
     )
 
