@@ -72,7 +72,7 @@ async def start_handler(message):
                 users_start_page, users_end_page = 0, 8
                 names_list = [
                     f"{key} \n{value} ta ovoz.\n\n"
-                    for key, value in database.get_teachers_by_order().items()
+                    for key, value in database.get_teachers().items()
                 ]
                 constructed_names = "".join(names_list[:end_page])
                 await message.answer(
@@ -106,7 +106,7 @@ async def pagination(callback_query):
     )
     names_list = [
         f"{key} \n{value} ta ovoz.\n\n"
-        for key, value in database.get_teachers_by_order().items()
+        for key, value in database.get_teachers().items()
     ]
     await bot.send_message(
         callback_query.from_user.id,

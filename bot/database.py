@@ -135,6 +135,16 @@ class Database:
             for school, fullname, number_of_votes in teachers.fetchall()
         }
 
+    def get_teachers(self):
+        teachers = self.cursor.execute(
+            """SELECT school, fullname, number_of_votes 
+            FROM teachers"""
+        )
+        return {
+            f"{school} {fullname}": number_of_votes
+            for school, fullname, number_of_votes in teachers.fetchall()
+        }
+
     def update_period(self, **kwargs):
         self.cursor.execute(
             f"""UPDATE period SET {list(kwargs.items())[0][0]}=? WHERE id = 1""",
