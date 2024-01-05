@@ -275,8 +275,7 @@ async def add_channel_handler(callback_query: types.CallbackQuery):
     await ChannelState.channel_name.set()
     await bot.send_message(
         callback_query.from_user.id,
-        "Kanal nomini kiriting.\nEslatma, kanal nomini to'g'ri kiriting, "
-        "foydalanuvchilar shu nom orqali kanalga qo'shilishadi",
+        "Kanal nomini kiriting.\nEslatma, kanal nomini quyidagi formatda kiriting: @kanal_nomi",
     )
 
 
@@ -289,7 +288,7 @@ async def channel_name_handler(message: types.Message, state: FSMContext):
         "Kanal muvaffaqiyatli qo'shildi, botni kanalga adminligiga yana bir bor ishonch hosil qiling!",
         reply_markup=admin_options(),
     )
-    database.add_channel(name="@" + name)
+    database.add_channel(name=name)
     await state.finish()
 
 
