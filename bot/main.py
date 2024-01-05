@@ -290,6 +290,7 @@ async def channel_name_handler(message: types.Message, state: FSMContext):
         reply_markup=admin_options(),
     )
     database.add_channel(name="@" + name)
+    await state.finish()
 
 
 @disp.callback_query_handler(lambda query: query.data == "advertise")
