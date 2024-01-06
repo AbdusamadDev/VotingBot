@@ -1,0 +1,2 @@
+../db.sqlite
+path > root/ubuntu/

@@ -4,17 +4,21 @@ from utils import month_names
 
 
 def teachers_list(start_page, end_page, labels):
-    part_1 = (start_page, start_page + 4)
-    part_2 = (start_page + 4, end_page)
+    # part_1 = (start_page, start_page + 4)
+    # part_2 = (start_page + 4, end_page)
 
     def create_teachers_list(limit):
         result = []
+        print(limit)
         for i in range(*limit):
             try:
                 result.append(
-                    InlineKeyboardButton(
-                        text=str(labels[i]), callback_data=f"School:{labels[i]}"
-                    )
+                    [
+                        InlineKeyboardButton(
+                            text=str(labels[i][0]).split("m")[0] + "M " + labels[i][1],
+                            callback_data=f"School:{labels[i][0]}",
+                        )
+                    ]
                 )
             except IndexError:
                 break
@@ -29,8 +33,7 @@ def teachers_list(start_page, end_page, labels):
         directions.append(next_button)
     buttons = InlineKeyboardMarkup(
         inline_keyboard=[
-            create_teachers_list(part_1),
-            create_teachers_list(part_2),
+            *create_teachers_list(limit=(start_page, end_page)),
             directions,
         ]
     )

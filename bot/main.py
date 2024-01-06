@@ -81,9 +81,10 @@ async def start_handler(message):
                     reply_markup=teachers_list(
                         start_page=start_page,
                         end_page=end_page,
-                        labels=list(get_teachers_name().keys()),
+                        labels=list(tuple(get_teachers_name().items())),
                     ),
                 )
+                print(list(tuple(get_teachers_name().items())))
                 database.add_user(
                     telegram_id=message.from_user.id,
                     first_name=message.from_user.first_name,
@@ -115,9 +116,10 @@ async def pagination(callback_query):
         reply_markup=teachers_list(
             start_page=start_page,
             end_page=end_page,
-            labels=list(get_teachers_name().keys()),
+            labels=list(tuple(get_teachers_name().items())),
         ),
     )
+    print(list(tuple(get_teachers_name().items())))
 
 
 @disp.callback_query_handler(lambda query: query.data.startswith("subscribed"))
@@ -346,7 +348,8 @@ async def proceed_advertise_user_handler(
 )
 async def copy_advertise_and_send(message: types.Message, state: FSMContext):
     await message.answer(
-        "Tashakkur, reklamangiz muvaffaqiyatli jo'natildi!", reply_markup=admin_options()
+        "Tashakkur, reklamangiz muvaffaqiyatli jo'natildi!",
+        reply_markup=admin_options(),
     )
     await state.update_data(advertise=message.text)
     data = await state.get_data()
