@@ -4,7 +4,7 @@ from utils import get_teachers_name, generate_list
 
 
 class Database:
-    def __init__(self, name: str = "../db.sqlite3") -> None:
+    def __init__(self, name: str = "db.sqlite3") -> None:
         self.connection = sqlite3.connect(name)
         self.cursor = self.connection.cursor()
         self.create_users_table()

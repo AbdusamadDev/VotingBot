@@ -3,7 +3,7 @@ import json
 import calendar
 from datetime import datetime
 
-path = "/home/legion/Documents/VotingBot/"
+path = "/root/ubuntu/telegram-bot/VotingBot/"
 
 def get_credentials():
     if not os.path.exists(path + "credentials.json"):
