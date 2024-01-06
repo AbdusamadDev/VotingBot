@@ -56,7 +56,7 @@ async def start_handler(message):
     start_month_num = list(calendar.month_name).index(time_period[0].capitalize())
     end_month_num = list(calendar.month_name).index(time_period[1].capitalize())
 
-    if ADMIN_ID + 8 != message.from_user.id:
+    if ADMIN_ID != message.from_user.id:
         current_month = datetime.now().month
         if start_month_num <= current_month <= end_month_num or (
             start_month_num > end_month_num
